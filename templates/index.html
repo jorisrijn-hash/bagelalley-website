@@ -401,7 +401,7 @@
     <img src="{{ url_for('static', filename='logo.png') }}" alt="Bagel Alley" onerror="this.style.display='none'">
     <span class="nav-logo-text">Bagel <span>Alley</span></span>
   </a>
-  <ul class="nav-links">
+  <ul class="nav-links" onclick="if(event.target.tagName==='A'){this.classList.remove('open');document.querySelector('.mobile-menu-btn').classList.remove('open');document.body.style.overflow=''}">
     <li><a href="#menu">Menu</a></li>
     <li><a href="#sfeer">Over Ons</a></li>
     <li><a href="#tijden">Openingstijden</a></li>
@@ -409,7 +409,7 @@
     <li><a href="/jobs" class="nav-jobs">Jobs</a></li>
     <li><a href="/reserveren" class="nav-cta">Reserveren</a></li>
   </ul>
-  <button class="mobile-menu-btn" aria-label="Menu"><span></span><span></span><span></span></button>
+  <button class="mobile-menu-btn" aria-label="Menu" onclick="var n=document.querySelector('.nav-links');var o=n.classList.toggle('open');this.classList.toggle('open',o);document.body.style.overflow=o?'hidden':'';"><span></span><span></span><span></span></button>
 </nav>
 
 
