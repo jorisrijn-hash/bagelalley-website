@@ -1079,16 +1079,24 @@ async function toonBookingFormulier() {
   const formWrapper = document.createElement("div"); formWrapper.className = "booking-chat-wrapper";
   const form = document.createElement("div"); form.className = "booking-chat-form";
   form.innerHTML = `
+    <div style="background:rgba(135,88,206,.08);border:1px solid rgba(135,88,206,.2);border-radius:8px;padding:.85rem 1.1rem;margin-bottom:.5rem;font-size:.8rem;color:rgba(245,240,232,.65);line-height:1.6;">
+      🍵 Voor <strong style="color:var(--purple2)">arrangementen</strong> (High Tea, Tapas box, catering) graag bellen: <a href="tel:0705146116" style="color:var(--purple2);font-weight:600;">070-514 61 16</a>
+    </div>
     <input type="text"  id="bkNaam"   placeholder="Jouw naam" autocomplete="name">
     <input type="email" id="bkEmail"  placeholder="E-mailadres" autocomplete="email">
     <input type="tel"   id="bkTel"    placeholder="Telefoonnummer (optioneel)" autocomplete="tel">
     <div class="booking-row2">
       <input type="date" id="bkDatum" value="${vandaag}" min="${vandaag}">
-      <select id="bkGasten">
+      <select id="bkGasten" onchange="checkGroepGrootte(this.value)">
         <option value="1">1 gast</option><option value="2" selected>2 gasten</option>
         <option value="3">3 gasten</option><option value="4">4 gasten</option>
         <option value="5">5 gasten</option><option value="6">6 gasten</option>
+        <option value="7+">7 of meer</option>
       </select>
+    </div>
+    <div id="bkGroepNotice" style="display:none;background:rgba(135,88,206,.12);border:1px solid rgba(135,88,206,.3);border-radius:8px;padding:.9rem 1.1rem;font-size:.82rem;color:var(--purple2);line-height:1.6;">
+      📞 Voor groepen van 7 of meer personen kun je niet online reserveren.<br>
+      Bel ons op <strong><a href="tel:0705146116" style="color:var(--purple2)">070-514 61 16</a></strong> of stuur een WhatsApp naar <strong><a href="https://wa.me/31651343359" style="color:var(--purple2)">06-513 43 359</a></strong>.
     </div>
     <div class="booking-slot-label">Kies een tijdslot</div>
     <div class="booking-slot-grid" id="bkSlotGrid">${bouwSlotGrid(vollSlots, gesloten)}</div>
@@ -1105,6 +1113,21 @@ async function toonBookingFormulier() {
   document.getElementById("bkDatum").addEventListener("change", verversSlots);
   document.getElementById("bkVerstuur").addEventListener("click", verstuurBooking);
   document.getElementById("bkSlotGrid").querySelectorAll(".booking-slot:not(.booking-slot-vol)").forEach(el => el.addEventListener("click", () => kiesSlot(el, el.dataset.tijd)));
+}
+
+function checkGroepGrootte(val) {
+  var notice = document.getElementById("bkGroepNotice");
+  var verstuur = document.getElementById("bkVerstuur");
+  var slotGrid = document.getElementById("bkSlotGrid");
+  if (val === "7+") {
+    notice.style.display = "block";
+    if (verstuur) verstuur.style.display = "none";
+    if (slotGrid) slotGrid.style.display = "none";
+  } else {
+    notice.style.display = "none";
+    if (verstuur) verstuur.style.display = "block";
+    if (slotGrid) slotGrid.style.display = "grid";
+  }
 }
 
 function kiesSlot(el, tijd) {
