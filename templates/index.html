@@ -361,29 +361,17 @@
     @media (max-width: 768px) {
       nav { padding: .9rem 1.5rem; }
       .nav-links { display: none; }
-      .mobile-menu-btn { display: none; }
-      .mobile-bottom-nav { display: none; }
-    @media (max-width: 768px) {
-    .mobile-bottom-nav {
-        display: flex; position: fixed; bottom: 0; left: 0; right: 0;
-        background: rgba(26,16,24,.97); backdrop-filter: blur(14px);
-        border-top: 1px solid rgba(135,88,206,.2);
-        z-index: 999; padding: .6rem 0 .8rem;
-        justify-content: space-around; align-items: center;
+      .mobile-menu-btn { display: flex; z-index: 1000; position: relative; }
+      .nav-links.open {
+        display: flex !important; flex-direction: column; align-items: flex-start;
+        position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+        background: var(--dark2); padding: 7rem 2rem 2rem;
+        gap: 2rem; z-index: 999;
       }
-      .mobile-bottom-nav a {
-        display: flex; flex-direction: column; align-items: center; gap: .25rem;
-        font-size: .58rem; font-weight: 500; letter-spacing: .06em; text-transform: uppercase;
-        color: rgba(245,240,232,.5); text-decoration: none; padding: .2rem .5rem;
-        transition: color .2s;
-      }
-      .mobile-bottom-nav a:hover, .mobile-bottom-nav a.active { color: var(--purple2); }
-      .mobile-bottom-nav a .nav-icon { font-size: 1.1rem; }
-      .mobile-bottom-nav a.nav-cta-mobile {
-        background: var(--purple); color: white; border-radius: 8px;
-        padding: .45rem .9rem; font-size: .65rem;
-      }
-    }
+      .nav-links.open a { font-size: 1.2rem; color: var(--cream); }
+      .nav-links.open a.nav-jobs { color: var(--muted); font-size: 1rem; }
+      .nav-links.open .nav-cta { font-size: 1rem; padding: .8rem 1.8rem; }
+      
       .hero-content { padding: 0 1.5rem 3rem; }
       .hero-stats { display: none; }
       .shortcuts { grid-template-columns: 1fr; height: auto; }
@@ -424,14 +412,6 @@
   <button class="mobile-menu-btn" aria-label="Menu"><span></span><span></span><span></span></button>
 </nav>
 
-<!-- MOBILE BOTTOM NAV -->
-<nav class="mobile-bottom-nav">
-  <a href="#menu"><span class="nav-icon">🍽️</span>Menu</a>
-  <a href="#sfeer"><span class="nav-icon">✨</span>Over ons</a>
-  <a href="#tijden"><span class="nav-icon">🕐</span>Tijden</a>
-  <a href="#contact"><span class="nav-icon">📞</span>Contact</a>
-  <a href="/reserveren" class="nav-cta-mobile"><span class="nav-icon">📅</span>Reserveer</a>
-</nav>
 
 <!-- HERO -->
 <section class="hero" id="home">
