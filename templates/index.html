@@ -1113,6 +1113,24 @@ document.addEventListener('DOMContentLoaded', function() {
     };
   });
 });
+
+document.addEventListener('DOMContentLoaded', function() {
+  var btn = document.querySelector('.mobile-menu-btn');
+  var nav = document.querySelector('.nav-links');
+  if (!btn || !nav) return;
+  btn.onclick = function() {
+    var isOpen = nav.classList.toggle('open');
+    btn.classList.toggle('open', isOpen);
+    document.body.style.overflow = isOpen ? 'hidden' : '';
+  };
+  nav.querySelectorAll('a').forEach(function(a) {
+    a.onclick = function() {
+      nav.classList.remove('open');
+      btn.classList.remove('open');
+      document.body.style.overflow = '';
+    };
+  });
+});
 </script>
 </body>
 </html>
