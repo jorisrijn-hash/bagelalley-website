@@ -107,6 +107,7 @@
     .btn-verwijder:hover { background: rgba(245,240,232,.06); color: rgba(245,240,232,.6); }
 
     .geen-boekingen { text-align: center; padding: 3rem; color: rgba(245,240,232,.3); font-size: .9rem; }
+    .bk-mobile-list { display: none; }
 
     /* LIVE NOTIFICATIES */
     #notifContainer { position: fixed; top: 70px; right: 20px; z-index: 200; display: flex; flex-direction: column; gap: 10px; }
@@ -187,11 +188,70 @@
     .loading { text-align: center; padding: 2rem; color: rgba(245,240,232,.35); font-size: .9rem; }
 
     @media (max-width: 768px) {
-      .admin-nav { padding: .8rem 1.2rem; }
-      .admin-main { padding: 1.5rem 1.2rem 3rem; }
-      .stat-row { grid-template-columns: 1fr 1fr; }
-      .date-nav-label { font-size: 1.1rem; }
-      .bk-table th:nth-child(4), .bk-table td:nth-child(4) { display: none; }
+      /* NAV */
+      .admin-nav { padding: .75rem 1rem; gap: .5rem; }
+      .admin-logo { font-size: 1rem; }
+      .admin-badge { font-size: .6rem; padding: .2rem .5rem; }
+      .btn-website { font-size: .72rem; }
+      .admin-logout-btn { font-size: .72rem; padding: .35rem .7rem; }
+      .sound-btn { font-size: .72rem; padding: .35rem .7rem; }
+
+      /* MAIN */
+      .admin-main { padding: 1rem 1rem 4rem; }
+
+      /* NOTIF PANEL */
+      .notif-panel-header { padding: .9rem 1rem; }
+      .notif-item { padding: .8rem 1rem; }
+
+      /* WEEK GRID — scrollbaar horizontaal */
+      .week-nav { margin-bottom: .9rem; }
+      .week-nav-label { font-size: .88rem; }
+      .week-grid {
+        display: flex; overflow-x: auto; gap: 8px;
+        padding-bottom: 6px; margin-bottom: 1.5rem;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+      }
+      .week-grid::-webkit-scrollbar { display: none; }
+      .week-day-card {
+        flex: 0 0 72px; min-width: 72px;
+        padding: .8rem .6rem; border-radius: 10px;
+      }
+      .week-day-label { font-size: .6rem; }
+      .week-day-date { font-size: 1.1rem; }
+      .week-day-count { font-size: .7rem; }
+
+      /* DATE NAV */
+      .date-nav { flex-wrap: wrap; gap: .6rem; margin-bottom: 1.2rem; }
+      .date-nav-label { font-size: 1.2rem; width: 100%; order: -1; }
+      #datumInput { font-size: .8rem; padding: .4rem .7rem; }
+
+      /* STAT CARDS */
+      .stat-row { grid-template-columns: 1fr 1fr; gap: .75rem; margin-bottom: 1.5rem; }
+      .stat-card { padding: 1rem 1.1rem; border-radius: 10px; }
+      .stat-card-value { font-size: 1.8rem; }
+      .stat-card-label { font-size: .62rem; }
+      .stat-card-sub { font-size: .68rem; }
+
+      /* BOEKINGEN TABLE → kaartjes op mobiel */
+      .boekingen-header { padding: .9rem 1rem; }
+      table.bk-table { display: none; }
+      .bk-mobile-list { display: block; }
+      .bk-mobile-card {
+        padding: 1rem 1rem; border-bottom: 1px solid rgba(135,88,206,.08);
+        display: flex; flex-direction: column; gap: .4rem;
+      }
+      .bk-mobile-card:last-child { border-bottom: none; }
+      .bk-mobile-top {
+        display: flex; align-items: center; justify-content: space-between;
+      }
+      .bk-mobile-naam { font-size: .95rem; font-weight: 500; color: var(--cream); }
+      .bk-mobile-meta { font-size: .8rem; color: rgba(245,240,232,.5); }
+      .bk-mobile-actions { display: flex; gap: .5rem; margin-top: .3rem; }
+
+      /* TOAST NOTIFS */
+      #notifContainer { right: 10px; left: 10px; top: 65px; }
+      .notif-toast { max-width: 100%; font-size: .82rem; }
     }
   </style>
 </head>
@@ -488,6 +548,7 @@ async function laadBoekingen(datum) {
       return;
     }
 
+    // Desktop tabel + mobiele kaartjes
     const html = `
       <table class="bk-table">
         <thead><tr>
@@ -508,6 +569,25 @@ async function laadBoekingen(datum) {
           `).join("")}
         </tbody>
       </table>
+      <div class="bk-mobile-list">
+        ${boekingen.map(b => `
+          <div class="bk-mobile-card${b.geannuleerd?' geannuleerd':''}">
+            <div class="bk-mobile-top">
+              <span class="bk-mobile-naam">${b.naam}</span>
+              <span class="tijd-badge">${b.tijd}</span>
+            </div>
+            <div class="bk-mobile-meta">👥 ${b.gasten} gasten &nbsp;·&nbsp; ${b.email}</div>
+            ${b.telefoon ? `<div class="bk-mobile-meta">📞 ${b.telefoon}</div>` : ""}
+            ${b.geannuleerd
+              ? `<div class="bk-mobile-meta" style="color:rgba(239,68,68,.5)">Geannuleerd</div>`
+              : `<div class="bk-mobile-actions">
+                  <button class="btn-annuleer" onclick="annuleer(${b.id})">Annuleer</button>
+                  <button class="btn-verwijder" onclick="verwijder(${b.id})">✕ Verwijder</button>
+                </div>`
+            }
+          </div>
+        `).join("")}
+      </div>
     `;
     document.getElementById("boekingenContent").innerHTML = html;
   } catch(e) {
