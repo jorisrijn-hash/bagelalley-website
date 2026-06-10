@@ -362,6 +362,12 @@
       nav { padding: .9rem 1.5rem; }
       .nav-links { display: none; }
       .mobile-menu-btn { display: flex; cursor: pointer; z-index: 1000; position: relative; }
+      .nav-close-btn {
+        display: none; position: fixed; top: 1.2rem; right: 1.5rem;
+        z-index: 9999; font-size: 1.4rem; color: rgba(245,240,232,.6);
+        cursor: pointer; padding: .5rem; line-height: 1;
+      }
+      #nav-toggle:checked ~ nav .nav-close-btn { display: block; }
       #nav-toggle:checked ~ nav .nav-links {
         display: flex; flex-direction: column; align-items: flex-start;
         position: fixed; top: 0; left: 0; right: 0; bottom: 0;
@@ -406,6 +412,7 @@
     <img src="{{ url_for('static', filename='logo.png') }}" alt="Bagel Alley" onerror="this.style.display='none'">
     <span class="nav-logo-text">Bagel <span>Alley</span></span>
   </a>
+  <label for="nav-toggle" class="nav-close-btn">✕</label>
   <ul class="nav-links">
     <li><a href="#menu">Menu</a></li>
     <li><a href="#sfeer">Over Ons</a></li>
