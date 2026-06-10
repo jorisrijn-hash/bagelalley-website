@@ -612,6 +612,11 @@ def admin_verwijder(boeking_id):
     return jsonify({"succes": True})
 # endregion
 
+@app.route("/ping")
+def ping():
+    return "ok", 200
+
+
 # region ── OPSTARTEN ───────────────────────────────────────────
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5001))
