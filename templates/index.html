@@ -49,7 +49,7 @@
 
 
     /* NAV */
-    nav { position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; padding: 1rem 4rem; background: rgba(245,240,232,.97); backdrop-filter: blur(14px); border-bottom: 1px solid rgba(135,88,206,.12); }
+    nav { position: sticky; top: 0; z-index: 1000; display: flex; justify-content: space-between; align-items: center; padding: 1rem 4rem; background: rgba(245,240,232,.97); backdrop-filter: blur(14px); border-bottom: 1px solid rgba(135,88,206,.12); }
     .nav-logo { display: flex; align-items: center; gap: .75rem; text-decoration: none; }
     .nav-logo img { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; }
     .nav-logo-text { font-family: 'Playfair Display', serif; font-size: 1.25rem; font-weight: 700; color: var(--text); line-height: 1; }
@@ -61,8 +61,11 @@
     .nav-links a.nav-jobs:hover { color: var(--muted); }
     .nav-cta { background: var(--purple) !important; color: white !important; padding: .6rem 1.5rem; border-radius: 3px; font-weight: 500 !important; transition: background .2s, transform .15s !important; }
     .nav-cta:hover { background: var(--purple3) !important; transform: translateY(-1px); }
-    .mobile-menu-btn { display: none; background: none; border: none; cursor: pointer; flex-direction: column; gap: 5px; padding: 4px; }
-    .mobile-menu-btn span { display: block; width: 22px; height: 2px; background: var(--text); border-radius: 2px; }
+    .mobile-menu-btn { display: none; background: none; border: none; cursor: pointer; flex-direction: column; gap: 5px; padding: 4px; z-index: 110; }
+    .mobile-menu-btn span { display: block; width: 22px; height: 2px; background: var(--muted); border-radius: 2px; transition: transform .3s, opacity .3s; }
+    .mobile-menu-btn.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .mobile-menu-btn.open span:nth-child(2) { opacity: 0; }
+    .mobile-menu-btn.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
     /* HERO */
     .hero { position: relative; height: 100vh; min-height: 640px; overflow: hidden; display: flex; align-items: flex-end; }
@@ -358,7 +361,17 @@
     @media (max-width: 768px) {
       nav { padding: .9rem 1.5rem; }
       .nav-links { display: none; }
-      .mobile-menu-btn { display: flex; }
+      .nav-links.open {
+        display: flex; flex-direction: column; align-items: flex-start;
+        position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+        background: var(--dark2);
+        padding: 5rem 2rem 2rem;
+        gap: 1.8rem; z-index: 999;
+      }
+      .nav-links.open a { font-size: 1.2rem; color: var(--cream); letter-spacing: .05em; }
+      .nav-links.open a.nav-jobs { color: var(--muted); font-size: 1rem; }
+      .nav-links.open .nav-cta { font-size: 1rem; padding: .8rem 1.8rem; }
+      .mobile-menu-btn { display: flex; z-index: 1000; position: relative; }
       .hero-content { padding: 0 1.5rem 3rem; }
       .hero-stats { display: none; }
       .shortcuts { grid-template-columns: 1fr; height: auto; }
@@ -1042,23 +1055,24 @@ function verstuurRating() {
 
 
 // ── INIT ──
-document.addEventListener('DOMContentLoaded', function() {
-  var btn = document.querySelector('.mobile-menu-btn');
-  var nav = document.querySelector('.nav-links');
-  if (!btn || !nav) return;
-  btn.onclick = function() {
-    var open = nav.classList.toggle('open');
-    btn.classList.toggle('open', open);
-    document.body.style.overflow = open ? 'hidden' : '';
-  };
-  nav.querySelectorAll('a').forEach(function(a) {
-    a.onclick = function() {
-      nav.classList.remove('open');
-      btn.classList.remove('open');
-      document.body.style.overflow = '';
-    };
+  // ── HAMBURGER MENU ──
+  const menuBtn = document.querySelector('.mobile-menu-btn');
+  const navLinks = document.querySelector('.nav-links');
+  menuBtn.addEventListener('click', () => {
+    const isOpen = navLinks.classList.toggle('open');
+    menuBtn.classList.toggle('open', isOpen);
+    document.body.style.overflow = isOpen ? 'hidden' : '';
   });
-});window.addEventListener("load", () => {
+  // Sluit menu bij klik op een link
+  navLinks.querySelectorAll('a').forEach(a => {
+    a.addEventListener('click', () => {
+      navLinks.classList.remove('open');
+      menuBtn.classList.remove('open');
+      document.body.style.overflow = '';
+    });
+  });
+
+window.addEventListener("load", () => {
   checkOpenStatus();
   zetSnelknoppen("start");
 
