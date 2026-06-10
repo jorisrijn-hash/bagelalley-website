@@ -362,7 +362,9 @@
       nav { padding: .9rem 1.5rem; }
       .nav-links { display: none; }
       .mobile-menu-btn { display: none; }
-      .mobile-bottom-nav {
+      .mobile-bottom-nav { display: none; }
+    @media (max-width: 768px) {
+    .mobile-bottom-nav {
         display: flex; position: fixed; bottom: 0; left: 0; right: 0;
         background: rgba(26,16,24,.97); backdrop-filter: blur(14px);
         border-top: 1px solid rgba(135,88,206,.2);
@@ -381,6 +383,7 @@
         background: var(--purple); color: white; border-radius: 8px;
         padding: .45rem .9rem; font-size: .65rem;
       }
+    }
       .hero-content { padding: 0 1.5rem 3rem; }
       .hero-stats { display: none; }
       .shortcuts { grid-template-columns: 1fr; height: auto; }
@@ -423,10 +426,10 @@
 
 <!-- MOBILE BOTTOM NAV -->
 <nav class="mobile-bottom-nav">
-  <a href="#menu"><span class="nav-icon">🥯</span>Menu</a>
-  <a href="#sfeer"><span class="nav-icon">☕</span>Over ons</a>
+  <a href="#menu"><span class="nav-icon">🍽️</span>Menu</a>
+  <a href="#sfeer"><span class="nav-icon">✨</span>Over ons</a>
   <a href="#tijden"><span class="nav-icon">🕐</span>Tijden</a>
-  <a href="#contact"><span class="nav-icon">📍</span>Contact</a>
+  <a href="#contact"><span class="nav-icon">📞</span>Contact</a>
   <a href="/reserveren" class="nav-cta-mobile"><span class="nav-icon">📅</span>Reserveer</a>
 </nav>
 
