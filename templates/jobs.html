@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Werken bij Bagel Alley — Wassenaar</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --cream: #F5F0E8; --dark: #1A1018; --dark2: #241E2A;
+      --purple: #8758CE; --purple2: #9B6EE0; --purple3: #6E42B0;
+      --muted: #6B5F7A;
+    }
+    body { font-family: 'DM Sans', sans-serif; background: var(--dark); color: var(--cream); min-height: 100vh; }
+
+    /* NAV */
+    nav { position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; padding: 1rem 3rem; background: var(--dark2); border-bottom: 2px solid var(--purple); }
+    .nav-logo { display: flex; align-items: center; gap: .75rem; text-decoration: none; }
+    .nav-logo img { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; }
+    .nav-logo-text { font-family: 'Playfair Display', serif; font-size: 1.2rem; font-weight: 700; color: var(--cream); }
+    .nav-logo-text span { color: var(--purple2); }
+    .nav-back { font-size: .82rem; color: rgba(245,240,232,.55); text-decoration: none; transition: color .2s; }
+    .nav-back:hover { color: var(--purple2); }
+    .nav-cta { background: var(--purple); color: white; padding: .5rem 1.4rem; border-radius: 3px; font-size: .8rem; font-weight: 500; text-decoration: none; }
+    .nav-cta:hover { background: var(--purple3); }
+
+    /* HERO */
+    .page-hero { background: linear-gradient(135deg, var(--dark2) 0%, rgba(135,88,206,.1) 100%); padding: 4rem 3rem 3rem; border-bottom: 1px solid rgba(135,88,206,.12); }
+    .page-hero-inner { max-width: 700px; }
+    .page-label { font-size: .72rem; font-weight: 500; letter-spacing: .18em; text-transform: uppercase; color: var(--purple2); display: block; margin-bottom: .7rem; }
+    .page-title { font-family: 'Playfair Display', serif; font-size: clamp(2.2rem, 4.5vw, 3.5rem); font-weight: 700; line-height: 1.1; color: var(--cream); margin-bottom: 1.1rem; }
+    .page-title em { font-style: italic; color: var(--purple2); }
+    .page-desc { font-size: 1rem; color: rgba(245,240,232,.65); line-height: 1.75; }
+    .hero-badges { display: flex; gap: .7rem; flex-wrap: wrap; margin-top: 1.6rem; }
+    .hero-badge { background: rgba(135,88,206,.15); border: 1px solid rgba(135,88,206,.3); color: var(--purple2); font-size: .73rem; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; padding: .35rem .9rem; border-radius: 20px; }
+
+    /* MAIN */
+    .jobs-main { max-width: 820px; margin: 0 auto; padding: 3rem 3rem 6rem; }
+
+    /* OPEN VACATURE CARD */
+    .vacature-card {
+      background: var(--dark2); border-radius: 14px;
+      border: 1px solid rgba(135,88,206,.2);
+      overflow: hidden; margin-bottom: 2rem;
+    }
+    .vacature-card-header {
+      background: var(--purple); padding: 1.8rem 2.2rem;
+      display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;
+    }
+    .vacature-card-title { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 700; color: white; }
+    .vacature-badge { background: rgba(255,255,255,.2); color: white; font-size: .72rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; padding: .3rem .85rem; border-radius: 20px; }
+    .vacature-body { padding: 2rem 2.2rem; }
+    .vacature-intro { font-size: 1rem; line-height: 1.75; color: rgba(245,240,232,.8); margin-bottom: 2rem; }
+    .vacature-intro strong { color: var(--purple2); font-weight: 600; }
+    .vacature-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 2rem; }
+    .vacature-item { background: rgba(135,88,206,.07); border: 1px solid rgba(135,88,206,.12); border-radius: 10px; padding: 1.1rem 1.3rem; }
+    .vacature-item-icon { font-size: 1.3rem; margin-bottom: .5rem; }
+    .vacature-item-label { font-size: .68rem; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--purple2); margin-bottom: .3rem; }
+    .vacature-item-value { font-size: .9rem; color: var(--cream); font-weight: 500; }
+
+    /* CONTACT CTA */
+    .contact-cta { background: rgba(135,88,206,.1); border: 1px solid rgba(135,88,206,.25); border-radius: 12px; padding: 2rem 2.2rem; }
+    .contact-cta-title { font-family: 'Playfair Display', serif; font-size: 1.2rem; font-weight: 700; color: var(--cream); margin-bottom: .5rem; }
+    .contact-cta-sub { font-size: .88rem; color: rgba(245,240,232,.55); margin-bottom: 1.5rem; line-height: 1.6; }
+    .contact-btns { display: flex; gap: .9rem; flex-wrap: wrap; }
+    .btn-purple { background: var(--purple); color: white; padding: .8rem 1.8rem; font-size: .85rem; font-weight: 500; letter-spacing: .05em; text-decoration: none; display: inline-flex; align-items: center; gap: .5rem; border-radius: 3px; transition: background .2s; }
+    .btn-purple:hover { background: var(--purple3); }
+    .btn-ghost { background: transparent; color: rgba(245,240,232,.7); padding: .8rem 1.8rem; font-size: .85rem; font-weight: 500; border: 1.5px solid rgba(245,240,232,.2); text-decoration: none; display: inline-flex; align-items: center; gap: .5rem; border-radius: 3px; transition: all .2s; }
+    .btn-ghost:hover { border-color: rgba(245,240,232,.4); color: var(--cream); }
+
+    /* SFEER BLOKJE */
+    .sfeer-blok { margin-top: 2.5rem; }
+    .sfeer-label { font-size: .7rem; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; color: var(--purple2); display: block; margin-bottom: 1rem; }
+    .sfeer-items { display: flex; gap: .8rem; flex-wrap: wrap; }
+    .sfeer-item { background: var(--dark2); border: 1px solid rgba(135,88,206,.1); border-radius: 8px; padding: .75rem 1.1rem; display: flex; align-items: center; gap: .6rem; font-size: .85rem; color: rgba(245,240,232,.7); }
+    .sfeer-item-icon { font-size: 1.1rem; }
+
+    @media (max-width: 768px) {
+      nav { padding: .9rem 1.2rem; }
+      .page-hero { padding: 2.5rem 1.2rem 2rem; }
+      .jobs-main { padding: 2rem 1.2rem 4rem; }
+      .vacature-body { padding: 1.5rem 1.4rem; }
+      .vacature-grid { grid-template-columns: 1fr; }
+      .vacature-card-header { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="nav-logo">
+    <img src="{{ url_for('static', filename='logo.png') }}" alt="Bagel Alley">
+    <span class="nav-logo-text">Bagel <span>Alley</span></span>
+  </a>
+  <a href="/" class="nav-back">← Terug naar de website</a>
+  <a href="/reserveren" class="nav-cta">Tafel reserveren</a>
+</nav>
+
+<div class="page-hero">
+  <div class="page-hero-inner">
+    <span class="page-label">Werken bij ons</span>
+    <h1 class="page-title">Wij zoeken<br><em>enthousiaste collega's</em></h1>
+    <p class="page-desc">Ben jij energiek, gastvrij en houd je van een gezellige werkomgeving? Dan ben jij precies wie we zoeken bij Bagel Alley in Wassenaar.</p>
+    <div class="hero-badges">
+      <span class="hero-badge">☀️ Parttime</span>
+      <span class="hero-badge">💼 Fulltime</span>
+      <span class="hero-badge">📅 Doordeweeks & weekend</span>
+      <span class="hero-badge">📍 Wassenaar</span>
+    </div>
+  </div>
+</div>
+
+<div class="jobs-main">
+
+  <!-- OPEN VACATURE -->
+  <div class="vacature-card">
+    <div class="vacature-card-header">
+      <div class="vacature-card-title">Medewerker bediening &amp; keuken</div>
+      <span class="vacature-badge">Meteen starten</span>
+    </div>
+    <div class="vacature-body">
+      <p class="vacature-intro">
+        Bagel Alley is een <strong>gezellig ontbijt- en lunchcafé</strong> in het hart van Wassenaar. Wij zijn op zoek naar mensen die met plezier aan het werk zijn, gasten blij maken en niet bang zijn om de handen uit de mouwen te steken.
+        <br><br>
+        Of je nu ochtendmens bent of juist lekker in het ritme van de lunch — bij ons past altijd een dienst die bij jou past. <strong>Werkervaring is geen vereiste</strong> — enthousiasme en een positieve instelling zijn dat wel.
+      </p>
+
+      <div class="vacature-grid">
+        <div class="vacature-item">
+          <div class="vacature-item-icon">🕐</div>
+          <div class="vacature-item-label">Uren</div>
+          <div class="vacature-item-value">Parttime of fulltime</div>
+        </div>
+        <div class="vacature-item">
+          <div class="vacature-item-icon">📅</div>
+          <div class="vacature-item-label">Dagen</div>
+          <div class="vacature-item-value">Doordeweeks &amp; weekend</div>
+        </div>
+        <div class="vacature-item">
+          <div class="vacature-item-icon">📍</div>
+          <div class="vacature-item-label">Locatie</div>
+          <div class="vacature-item-value">Langstraat 42, Wassenaar</div>
+        </div>
+        <div class="vacature-item">
+          <div class="vacature-item-icon">💶</div>
+          <div class="vacature-item-label">Salaris</div>
+          <div class="vacature-item-value">Eerlijk salaris</div>
+        </div>
+      </div>
+
+      <div class="sfeer-blok">
+        <span class="sfeer-label">Wat wij bieden</span>
+        <div class="sfeer-items">
+          <div class="sfeer-item"><span class="sfeer-item-icon">😊</span> Gezellige werkvloer</div>
+          <div class="sfeer-item"><span class="sfeer-item-icon">⏰</span> Flexibele werktijden</div>
+          <div class="sfeer-item"><span class="sfeer-item-icon">💪</span> Zelfstandig werken</div>
+          <div class="sfeer-item"><span class="sfeer-item-icon">☕</span> Gratis koffie &amp; lunch</div>
+          <div class="sfeer-item"><span class="sfeer-item-icon">📈</span> Ruimte om te groeien</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTACT CTA -->
+  <div class="contact-cta">
+    <div class="contact-cta-title">Geïnteresseerd?</div>
+    <p class="contact-cta-sub">Stuur een mailtje of bel ons gewoon op. We reageren snel en plannen graag een korte kennismaking in. Ook als je nog vragen hebt — we staan altijd open voor een goed gesprek.</p>
+    <div class="contact-btns">
+      <a href="tel:0651343359" class="btn-purple">📞 Bel 06-513 43 359</a>
+      <a href="mailto:vrcbagel@gmail.com" class="btn-ghost">✉️ vrcbagel@gmail.com</a>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

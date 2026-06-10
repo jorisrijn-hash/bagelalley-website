@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reserveren — Bagel Alley Wassenaar</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --cream: #F5F0E8; --cream2: #EDE6D6;
+      --dark: #1A1018; --dark2: #241E2A;
+      --purple: #8758CE; --purple2: #9B6EE0; --purple3: #6E42B0;
+      --text: #1E1828; --muted: #6B5F7A; --white: #FDFAF5;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--text); min-height: 100vh; }
+
+    /* NAV */
+    nav { display: flex; justify-content: space-between; align-items: center; padding: 1rem 4rem; background: var(--dark2); border-bottom: 2px solid var(--purple); }
+    .nav-logo { display: flex; align-items: center; gap: .75rem; text-decoration: none; }
+    .nav-logo-text { font-family: 'Playfair Display', serif; font-size: 1.2rem; font-weight: 700; color: var(--cream); }
+    .nav-logo-text span { color: var(--purple2); }
+    .nav-back { font-size: .8rem; color: rgba(245,240,232,.55); text-decoration: none; letter-spacing: .06em; text-transform: uppercase; transition: color .2s; display: flex; align-items: center; gap: .4rem; }
+    .nav-back:hover { color: var(--purple2); }
+
+    /* HERO STRIP */
+    .booking-hero {
+      background: var(--dark2);
+      padding: 3.5rem 4rem 0;
+      text-align: center;
+      border-bottom: 1px solid rgba(135,88,206,.15);
+    }
+    .booking-hero-label { font-size: .72rem; font-weight: 500; letter-spacing: .18em; text-transform: uppercase; color: var(--purple2); display: block; margin-bottom: .8rem; }
+    .booking-hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(2.2rem, 4vw, 3.5rem); font-weight: 700; color: var(--cream); line-height: 1.1; margin-bottom: 1rem; }
+    .booking-hero h1 em { font-style: italic; color: var(--purple2); }
+    .booking-hero-sub { font-size: 1rem; color: rgba(245,240,232,.55); max-width: 480px; margin: 0 auto 2.5rem; line-height: 1.7; }
+    .booking-hero-tabs {
+      display: flex; justify-content: center; gap: 0;
+      border-top: 1px solid rgba(135,88,206,.15);
+      margin-top: 0;
+    }
+    .booking-hero-tab { padding: 1rem 2rem; font-size: .8rem; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: rgba(245,240,232,.4); border-top: 3px solid transparent; margin-top: -1px; }
+    .booking-hero-tab.active { color: var(--purple2); border-top-color: var(--purple); }
+
+    /* MAIN LAYOUT */
+    .booking-main { max-width: 1100px; margin: 0 auto; padding: 3rem 2rem 5rem; display: grid; grid-template-columns: 1fr 380px; gap: 3rem; align-items: start; }
+
+    /* FORM CARD */
+    .booking-card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 40px rgba(135,88,206,.08); }
+    .booking-card-header { background: var(--purple); padding: 1.4rem 2rem; }
+    .booking-card-header h2 { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: white; }
+    .booking-card-header p { font-size: .82rem; color: rgba(255,255,255,.65); margin-top: .3rem; }
+    .booking-card-body { padding: 2rem; display: flex; flex-direction: column; gap: 1.2rem; }
+
+    .form-group { display: flex; flex-direction: column; gap: .45rem; }
+    .form-label { font-size: .78rem; font-weight: 500; color: var(--muted); letter-spacing: .06em; text-transform: uppercase; }
+    .form-label span { color: var(--purple); }
+    .form-input, .form-select {
+      padding: .75rem 1rem; font-size: .92rem;
+      border: 1.5px solid rgba(135,88,206,.2); border-radius: 8px;
+      font-family: 'DM Sans', sans-serif; color: var(--text);
+      background: #fafafa; outline: none; width: 100%;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .form-input:focus, .form-select:focus { border-color: var(--purple); background: white; box-shadow: 0 0 0 3px rgba(135,88,206,.08); }
+    .form-input::placeholder { color: #bbb; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+    /* TIJDSLOT GRID */
+    .slot-label { font-size: .78rem; font-weight: 500; color: var(--muted); letter-spacing: .06em; text-transform: uppercase; margin-top: .2rem; }
+    .slot-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: .6rem; }
+    .slot { padding: .55rem .4rem; border: 1.5px solid rgba(135,88,206,.2); border-radius: 8px; font-size: .82rem; text-align: center; cursor: pointer; color: var(--text); transition: all .15s; font-family: 'DM Sans', sans-serif; }
+    .slot:hover { border-color: var(--purple); background: rgba(135,88,206,.06); }
+    .slot.gekozen { background: var(--purple) !important; color: white !important; border-color: var(--purple) !important; font-weight: 500; }
+    .slot.vol { background: #f5f5f5; color: #ccc; cursor: not-allowed; border-color: #e8e8e8; text-decoration: line-through; }
+    .slot-dinsdag-msg { grid-column: 1/-1; text-align: center; color: rgba(135,88,206,.6); font-size: .85rem; padding: 1rem; background: rgba(135,88,206,.06); border-radius: 8px; }
+
+    /* ERROR / SUCCESS */
+    .form-error { background: #fff2f2; color: #c33; border: 1px solid #fcc; border-radius: 8px; padding: .75rem 1rem; font-size: .85rem; display: none; }
+    .form-success { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; border-radius: 8px; padding: 1.2rem 1.5rem; font-size: .9rem; display: none; }
+    .form-success strong { display: block; font-size: 1.05rem; margin-bottom: .4rem; }
+
+    /* SUBMIT BTN */
+    .btn-submit { background: var(--purple); color: white; border: none; padding: 1rem 2rem; font-size: .92rem; font-weight: 500; border-radius: 8px; cursor: pointer; transition: background .2s, transform .15s; width: 100%; font-family: 'DM Sans', sans-serif; letter-spacing: .04em; }
+    .btn-submit:hover { background: var(--purple3); transform: translateY(-1px); }
+    .btn-submit:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+
+    /* SIDEBAR */
+    .booking-sidebar { display: flex; flex-direction: column; gap: 1.5rem; }
+    .sidebar-card { background: var(--dark2); border-radius: 12px; padding: 1.6rem; }
+    .sidebar-card-title { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; color: var(--cream); margin-bottom: 1.2rem; }
+    .sidebar-info-list { display: flex; flex-direction: column; gap: .9rem; }
+    .sidebar-info-item { display: flex; align-items: flex-start; gap: .75rem; }
+    .sidebar-info-item svg { width: 16px; height: 16px; stroke: var(--purple2); fill: none; stroke-width: 1.8; flex-shrink: 0; margin-top: 2px; }
+    .sidebar-info-label { font-size: .72rem; color: rgba(245,240,232,.4); text-transform: uppercase; letter-spacing: .08em; margin-bottom: .1rem; }
+    .sidebar-info-value { font-size: .9rem; color: var(--cream); font-weight: 500; line-height: 1.4; }
+
+    /* Openingstijden tabel sidebar */
+    .hours-mini { width: 100%; border-collapse: collapse; margin-top: .5rem; }
+    .hours-mini tr { border-bottom: 1px solid rgba(135,88,206,.08); }
+    .hours-mini tr:last-child { border-bottom: none; }
+    .hours-mini td { padding: .55rem 0; font-size: .82rem; }
+    .hours-mini td:first-child { color: rgba(245,240,232,.5); }
+    .hours-mini td:last-child { color: var(--cream); text-align: right; font-weight: 500; }
+    .hours-mini tr.closed td { color: rgba(245,240,232,.25) !important; }
+    .hours-mini tr.closed td:last-child { color: var(--purple2) !important; }
+
+    .sidebar-img { border-radius: 8px; overflow: hidden; height: 180px; }
+    .sidebar-img img { width: 100%; height: 100%; object-fit: cover; }
+
+    /* VANDAAG VERWACHT — hidden van klantview */
+    /* (Klanten zien geen bezettingsdata) */
+
+    @media (max-width: 900px) {
+      nav { padding: 1rem 1.5rem; }
+      .booking-hero { padding: 2.5rem 1.5rem 0; }
+      .booking-main { grid-template-columns: 1fr; padding: 2rem 1.5rem 4rem; }
+      .booking-sidebar { order: -1; }
+    }
+    @media (max-width: 480px) {
+      .form-row { grid-template-columns: 1fr; }
+      .slot-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="/" class="nav-logo">
+    <span class="nav-logo-text">Bagel <span>Alley</span></span>
+  </a>
+  <a href="/" class="nav-back">← Terug naar de website</a>
+</nav>
+
+<!-- HERO STRIP -->
+<div class="booking-hero">
+  <span class="booking-hero-label">Wassenaar · Langstraat 42</span>
+  <h1>Reserveer je tafel<br><em>direct bevestigd.</em></h1>
+  <p class="booking-hero-sub">Kies een datum en tijdstip en ontvang direct een bevestiging per e-mail.</p>
+  <div class="booking-hero-tabs">
+    <div class="booking-hero-tab active">📅 Reservering</div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="booking-main">
+
+  <!-- FORM -->
+  <div class="booking-card">
+    <div class="booking-card-header">
+      <h2>Nieuwe reservering</h2>
+      <p>Vul je gegevens in — we bevestigen direct per e-mail</p>
+    </div>
+    <div class="booking-card-body">
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Naam <span>*</span></label>
+          <input type="text" id="naam" class="form-input" placeholder="Je volledige naam" autocomplete="name">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Telefoon</label>
+          <input type="tel" id="telefoon" class="form-input" placeholder="06-12345678" autocomplete="tel">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">E-mail <span>*</span></label>
+          <input type="email" id="email" class="form-input" placeholder="jouw@email.nl" autocomplete="email">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Aantal gasten</label>
+          <select id="gasten" class="form-select">
+            <option value="1">1 persoon</option>
+            <option value="2" selected>2 personen</option>
+            <option value="3">3 personen</option>
+            <option value="4">4 personen</option>
+            <option value="5">5 personen</option>
+            <option value="6">6 personen</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Datum <span>*</span></label>
+        <input type="date" id="datum" class="form-input" value="" min="">
+      </div>
+
+      <div>
+        <div class="slot-label">Kies een tijdslot <span style="color:var(--purple)">*</span></div>
+        <div class="slot-grid" id="slotGrid">
+          <div style="grid-column:1/-1;text-align:center;padding:.5rem;font-size:.82rem;color:#bbb">Kies eerst een datum</div>
+        </div>
+      </div>
+
+      <div class="form-error" id="formError"></div>
+      <div class="form-success" id="formSuccess">
+        <strong>🥯 Gelukt! Je reservering is bevestigd.</strong>
+        <span id="successDetails"></span>
+      </div>
+
+      <button class="btn-submit" id="submitBtn" onclick="verstuurReservering()">Tafel reserveren</button>
+    </div>
+  </div>
+
+  <!-- SIDEBAR -->
+  <div class="booking-sidebar">
+
+    <div class="sidebar-card">
+      <div class="sidebar-card-title">Praktische info</div>
+      <div class="sidebar-info-list">
+        <div class="sidebar-info-item">
+          <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z"/><circle cx="12" cy="11" r="3"/></svg>
+          <div>
+            <div class="sidebar-info-label">Adres</div>
+            <div class="sidebar-info-value">Langstraat 42<br>2242 KM Wassenaar</div>
+          </div>
+        </div>
+        <div class="sidebar-info-item">
+          <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+          <div>
+            <div class="sidebar-info-label">Telefoon</div>
+            <div class="sidebar-info-value">070-514 61 16</div>
+          </div>
+        </div>
+        <div class="sidebar-info-item">
+          <svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+          <div>
+            <div class="sidebar-info-label">E-mail</div>
+            <div class="sidebar-info-value">info@bagelalley.nl</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar-card">
+      <div class="sidebar-card-title">Openingstijden</div>
+      <table class="hours-mini">
+        <tr><td>Maandag</td><td>08:00 – 16:00</td></tr>
+        <tr class="closed"><td>Dinsdag</td><td>Gesloten</td></tr>
+        <tr><td>Woensdag</td><td>08:00 – 16:00</td></tr>
+        <tr><td>Donderdag</td><td>08:00 – 16:00</td></tr>
+        <tr><td>Vrijdag</td><td>08:00 – 16:00</td></tr>
+        <tr><td>Zaterdag</td><td>08:00 – 16:00</td></tr>
+        <tr><td>Zondag</td><td>08:00 – 16:00</td></tr>
+      </table>
+    </div>
+
+    <div class="sidebar-card" style="padding:0;overflow:hidden">
+      <div class="sidebar-img">
+        <img src="{{ url_for('static', filename='fotos/pexels-anchornhaven-43716305-29445728.jpg') }}" alt="Bagel Alley" loading="lazy">
+      </div>
+      <div style="padding:1.2rem 1.6rem 1.4rem">
+        <div style="font-size:.82rem;color:rgba(245,240,232,.55);line-height:1.6">Heb je een groep of speciale wens? Bel ons op <strong style="color:var(--purple2)">070-514 61 16</strong> voor maatwerk.</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const ALLE_SLOTS = ["08:00","08:30","09:00","09:30","10:00","10:30","11:00","11:30","12:00","12:30","13:00","13:30","14:00","14:30","15:00","15:30"];
+let gekozenSlot = null;
+
+// Zet vandaag als standaard en min
+const nu = new Date();
+const vandaag = `${nu.getFullYear()}-${String(nu.getMonth()+1).padStart(2,'0')}-${String(nu.getDate()).padStart(2,'0')}`;
+document.getElementById("datum").value = vandaag;
+document.getElementById("datum").min   = vandaag;
+document.getElementById("datum").addEventListener("change", laadSlots);
+
+function isDinsdag(d) { return new Date(d+"T12:00:00").getDay() === 2; }
+
+async function laadSlots() {
+  const datum = document.getElementById("datum").value;
+  if (!datum) return;
+  gekozenSlot = null;
+  const grid = document.getElementById("slotGrid");
+  if (isDinsdag(datum)) {
+    grid.innerHTML = `<div class="slot-dinsdag-msg">Bagel Alley is op dinsdag gesloten — kies een andere dag.</div>`;
+    return;
+  }
+  grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:.5rem;font-size:.82rem;color:#bbb">Tijdslots laden...</div>`;
+  try {
+    const r = await fetch(`/volle-slots?datum=${datum}`);
+    const d = await r.json();
+    const vol = d.volle_slots || [];
+    grid.innerHTML = ALLE_SLOTS.map(s => vol.includes(s)
+      ? `<div class="slot vol" data-tijd="${s}">${s}</div>`
+      : `<div class="slot" data-tijd="${s}" onclick="kiesSlot(this,'${s}')">${s}</div>`
+    ).join("");
+  } catch {
+    grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:.5rem;font-size:.82rem;color:#c33">Kon tijdslots niet laden. Probeer het opnieuw.</div>`;
+  }
+}
+
+function kiesSlot(el, tijd) {
+  document.querySelectorAll(".slot").forEach(s => s.classList.remove("gekozen"));
+  el.classList.add("gekozen");
+  gekozenSlot = tijd;
+}
+
+async function verstuurReservering() {
+  const naam   = document.getElementById("naam").value.trim();
+  const email  = document.getElementById("email").value.trim();
+  const tel    = document.getElementById("telefoon").value.trim();
+  const datum  = document.getElementById("datum").value;
+  const gasten = parseInt(document.getElementById("gasten").value);
+  const err    = document.getElementById("formError");
+  const ok     = document.getElementById("formSuccess");
+  const btn    = document.getElementById("submitBtn");
+
+  err.style.display = "none"; ok.style.display = "none";
+
+  if (!naam)              { err.textContent = "Vul je naam in."; err.style.display = "block"; return; }
+  if (!email||!email.includes("@")) { err.textContent = "Vul een geldig e-mailadres in."; err.style.display = "block"; return; }
+  if (!datum)             { err.textContent = "Kies een datum."; err.style.display = "block"; return; }
+  if (isDinsdag(datum))   { err.textContent = "Bagel Alley is op dinsdag gesloten. Kies een andere dag."; err.style.display = "block"; return; }
+  if (!gekozenSlot)       { err.textContent = "Kies een tijdslot."; err.style.display = "block"; return; }
+
+  btn.textContent = "Bezig..."; btn.disabled = true;
+
+  try {
+    const r = await fetch("/reserveren", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ naam, email, gasten, datum, tijd: gekozenSlot, telefoon: tel })
+    });
+    const data = await r.json();
+    btn.textContent = "Tafel reserveren"; btn.disabled = false;
+
+    if (data.succes) {
+      // Maak datum mooi
+      const d = new Date(datum+"T12:00:00");
+      const dagen = ["zondag","maandag","dinsdag","woensdag","donderdag","vrijdag","zaterdag"];
+      const maanden = ["januari","februari","maart","april","mei","juni","juli","augustus","september","oktober","november","december"];
+      const datumNl = `${dagen[d.getDay()]} ${d.getDate()} ${maanden[d.getMonth()]} ${d.getFullYear()}`;
+      document.getElementById("successDetails").textContent = `${naam} · ${datumNl} om ${gekozenSlot} · ${gasten} ${gasten===1?"persoon":"personen"}. Bevestiging naar ${email}.`;
+      ok.style.display = "block";
+      // Reset form
+      document.getElementById("naam").value = "";
+      document.getElementById("email").value = "";
+      document.getElementById("telefoon").value = "";
+      document.getElementById("gasten").value = "2";
+      gekozenSlot = null;
+      await laadSlots(); // slots verversen
+      ok.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    } else {
+      err.textContent = data.fout || "Er ging iets mis. Probeer het opnieuw.";
+      err.style.display = "block";
+    }
+  } catch {
+    btn.textContent = "Tafel reserveren"; btn.disabled = false;
+    err.textContent = "Kan de server niet bereiken. Probeer het opnieuw.";
+    err.style.display = "block";
+  }
+}
+
+// Laad direct slots voor vandaag
+laadSlots();
+</script>
+</body>
+</html>

@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bagel Alley | Breakfast · Lunch · Tea · Take Away — Wassenaar</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --cream: #F5F0E8; --cream2: #EDE6D6;
+      --dark: #1A1018; --dark2: #241E2A;
+      --purple: #8758CE; --purple2: #9B6EE0; --purple3: #6E42B0;
+      --text: #1E1828; --muted: #6B5F7A; --white: #FDFAF5;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--text); overflow-x: hidden; }
+
+    /* VACATURE BANNER */
+    .vacature-bar {
+      background: var(--dark); border-bottom: 1px solid rgba(135,88,206,.25);
+      padding: .65rem 2rem; display: flex; align-items: center; justify-content: center;
+      gap: 1.2rem; flex-wrap: wrap;
+    }
+    .vacature-bar-badge {
+      background: var(--purple); color: white;
+      font-size: .65rem; font-weight: 700; letter-spacing: .1em;
+      text-transform: uppercase; padding: .2rem .6rem; border-radius: 3px;
+      flex-shrink: 0;
+    }
+    .vacature-bar-text {
+      font-size: .82rem; color: rgba(245,240,232,.8);
+    }
+    .vacature-bar-text strong { color: white; font-weight: 600; }
+    .vacature-bar-link {
+      font-size: .78rem; font-weight: 500; color: var(--purple2);
+      text-decoration: none; border-bottom: 1px solid rgba(155,110,224,.35);
+      letter-spacing: .04em; white-space: nowrap;
+      transition: color .2s, border-color .2s;
+      flex-shrink: 0;
+    }
+    .vacature-bar-link:hover { color: white; border-color: white; }
+
+    /* TOPBAR */
+    .topbar { background: var(--purple); padding: .55rem 2rem; text-align: center; font-size: .8rem; color: rgba(255,255,255,.9); letter-spacing: .04em; }
+    .topbar strong { font-weight: 600; color: #fff; }
+
+
+    /* NAV */
+    nav { position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; padding: 1rem 4rem; background: rgba(245,240,232,.97); backdrop-filter: blur(14px); border-bottom: 1px solid rgba(135,88,206,.12); }
+    .nav-logo { display: flex; align-items: center; gap: .75rem; text-decoration: none; }
+    .nav-logo img { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; }
+    .nav-logo-text { font-family: 'Playfair Display', serif; font-size: 1.25rem; font-weight: 700; color: var(--text); line-height: 1; }
+    .nav-logo-text span { color: var(--purple); }
+    .nav-links { display: flex; gap: 2.5rem; list-style: none; align-items: center; }
+    .nav-links a { font-size: .8rem; font-weight: 400; color: var(--muted); text-decoration: none; letter-spacing: .08em; text-transform: uppercase; transition: color .2s; }
+    .nav-links a:hover { color: var(--purple); }
+    .nav-links a.nav-jobs { color: rgba(107,95,122,.55); font-size: .75rem; }
+    .nav-links a.nav-jobs:hover { color: var(--muted); }
+    .nav-cta { background: var(--purple) !important; color: white !important; padding: .6rem 1.5rem; border-radius: 3px; font-weight: 500 !important; transition: background .2s, transform .15s !important; }
+    .nav-cta:hover { background: var(--purple3) !important; transform: translateY(-1px); }
+    .mobile-menu-btn { display: none; background: none; border: none; cursor: pointer; flex-direction: column; gap: 5px; padding: 4px; }
+    .mobile-menu-btn span { display: block; width: 22px; height: 2px; background: var(--text); border-radius: 2px; }
+
+    /* HERO */
+    .hero { position: relative; height: 100vh; min-height: 640px; overflow: hidden; display: flex; align-items: flex-end; }
+    .hero-bg { position: absolute; inset: 0; background-image: url("{{ url_for('static', filename='fotos/pexels-roman-odintsov-4869221.jpg') }}"); background-size: cover; background-position: center 45%; animation: heroZoom 12s ease-out forwards; }
+    @keyframes heroZoom { from { transform: scale(1.05); } to { transform: scale(1); } }
+    .hero-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(26,16,24,.93) 0%, rgba(26,16,24,.55) 45%, rgba(26,16,24,.12) 100%); }
+    .hero-content { position: relative; z-index: 2; padding: 0 6rem 5rem; max-width: 780px; }
+    .hero-badge { display: inline-flex; align-items: center; gap: .6rem; background: rgba(135,88,206,.18); border: 1px solid rgba(135,88,206,.45); color: #C4A5F0; font-size: .75rem; font-weight: 500; letter-spacing: .14em; text-transform: uppercase; padding: .4rem 1rem; border-radius: 2px; margin-bottom: 1.5rem; width: fit-content; opacity: 0; animation: fadeUp .8s .2s forwards; }
+    .hero-badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--purple2); }
+    .hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(3rem, 5.5vw, 5.5rem); font-weight: 700; line-height: 1.05; color: var(--cream); letter-spacing: -.02em; margin-bottom: 1.4rem; opacity: 0; animation: fadeUp .8s .4s forwards; }
+    .hero h1 em { font-style: italic; color: var(--purple2); }
+    .hero-desc { font-size: 1.05rem; font-weight: 300; color: rgba(245,240,232,.72); line-height: 1.75; max-width: 500px; margin-bottom: 2.2rem; opacity: 0; animation: fadeUp .8s .6s forwards; }
+    .hero-buttons { display: flex; gap: 1rem; flex-wrap: wrap; opacity: 0; animation: fadeUp .8s .8s forwards; }
+    .btn-purple { background: var(--purple); color: white; padding: 1rem 2.4rem; font-size: .88rem; font-weight: 500; letter-spacing: .07em; text-transform: uppercase; border: none; cursor: pointer; text-decoration: none; display: inline-block; border-radius: 3px; transition: background .2s, transform .15s; }
+    .btn-purple:hover { background: var(--purple3); transform: translateY(-1px); }
+    .btn-ghost-light { background: transparent; color: var(--cream); padding: 1rem 2.4rem; font-size: .88rem; font-weight: 500; letter-spacing: .07em; text-transform: uppercase; border: 1.5px solid rgba(245,240,232,.45); cursor: pointer; text-decoration: none; display: inline-block; border-radius: 3px; transition: all .2s; }
+    .btn-ghost-light:hover { background: rgba(245,240,232,.1); border-color: var(--cream); transform: translateY(-1px); }
+    .hero-stats { position: absolute; bottom: 0; right: 0; display: flex; z-index: 2; opacity: 0; animation: fadeIn .8s 1.1s forwards; }
+    .hero-stat { background: rgba(26,16,24,.82); backdrop-filter: blur(10px); padding: 1.4rem 2.2rem; border-left: 1px solid rgba(135,88,206,.2); text-align: center; }
+    .hero-stat-number { font-family: 'Playfair Display', serif; font-size: 1.9rem; font-weight: 700; color: var(--purple2); display: block; line-height: 1; }
+    .hero-stat-label { font-size: .68rem; color: rgba(245,240,232,.5); letter-spacing: .1em; text-transform: uppercase; margin-top: .35rem; display: block; }
+
+    /* INFO STRIP */
+    .info-strip { background: var(--dark2); display: flex; }
+    .info-strip-item { flex: 1; display: flex; align-items: center; gap: 1rem; padding: 1.5rem 2rem; border-right: 1px solid rgba(135,88,206,.12); }
+    .info-strip-item:last-child { border-right: none; }
+    .strip-icon { width: 38px; height: 38px; background: rgba(135,88,206,.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .strip-icon svg { width: 17px; height: 17px; stroke: var(--purple2); fill: none; stroke-width: 1.8; }
+    .strip-text-main { font-size: .88rem; font-weight: 500; color: var(--cream); line-height: 1.3; }
+    .strip-text-sub { font-size: .75rem; color: rgba(245,240,232,.45); margin-top: .1rem; }
+
+    /* SHORTCUT CARDS */
+    .shortcuts { display: grid; grid-template-columns: 1fr 1fr; height: 300px; }
+    .shortcut-card { position: relative; overflow: hidden; cursor: pointer; text-decoration: none; display: flex; align-items: flex-end; }
+    .shortcut-card-bg { position: absolute; inset: 0; background-size: cover; background-position: center; transition: transform .6s ease; }
+    .shortcut-card:hover .shortcut-card-bg { transform: scale(1.05); }
+    .shortcut-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(26,16,24,.85) 0%, rgba(26,16,24,.2) 60%, transparent 100%); transition: background .3s; }
+    .shortcut-card:hover .shortcut-overlay { background: linear-gradient(to top, rgba(26,16,24,.9) 0%, rgba(26,16,24,.4) 60%, transparent 100%); }
+    .shortcut-body { position: relative; z-index: 1; padding: 2rem 2.5rem; width: 100%; }
+    .shortcut-label { font-size: .7rem; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; color: var(--purple2); margin-bottom: .4rem; display: block; }
+    .shortcut-title { font-family: 'Playfair Display', serif; font-size: 1.65rem; font-weight: 700; color: var(--cream); line-height: 1.1; margin-bottom: .8rem; }
+    .shortcut-link { font-size: .8rem; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: rgba(245,240,232,.6); display: inline-flex; align-items: center; gap: .4rem; transition: color .2s, gap .2s; }
+    .shortcut-card:hover .shortcut-link { color: var(--purple2); gap: .7rem; }
+
+    /* SECTIONS */
+    .section-label { font-size: .72rem; font-weight: 500; letter-spacing: .18em; text-transform: uppercase; color: var(--purple); display: block; margin-bottom: .8rem; }
+    .section-title { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 3.5vw, 3.2rem); font-weight: 700; line-height: 1.1; color: var(--text); margin-bottom: 1.5rem; }
+
+    /* SFEER */
+    .sfeer-section { padding: 7rem 6rem; background: var(--cream); }
+    .sfeer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; grid-template-rows: 240px 240px; gap: 12px; margin-top: 3rem; }
+    .sfeer-img { overflow: hidden; border-radius: 3px; background: var(--cream2); }
+    .sfeer-main { grid-row: 1/3; }
+    .sfeer-img img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .6s ease; }
+    .sfeer-img:hover img { transform: scale(1.04); }
+    .sfeer-text { grid-column: 2/4; grid-row: 2; display: flex; flex-direction: column; justify-content: flex-end; padding: 2rem; background: var(--dark2); border-radius: 3px; }
+    .sfeer-text-title { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700; color: var(--cream); margin-bottom: .8rem; line-height: 1.25; }
+    .sfeer-text-body { font-size: .9rem; color: rgba(245,240,232,.6); line-height: 1.7; }
+    .sfeer-link { display: inline-flex; align-items: center; gap: .4rem; margin-top: 1.2rem; font-size: .78rem; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--purple2); text-decoration: none; transition: gap .2s; }
+    .sfeer-link:hover { gap: .7rem; }
+
+    /* MENU */
+    .menu-section { padding: 7rem 6rem; background: var(--cream2); }
+    .menu-layout { display: grid; grid-template-columns: 1fr 2fr; gap: 5rem; align-items: start; }
+    .menu-sticky { position: sticky; top: 120px; }
+    .menu-section-body { font-size: 1rem; color: var(--muted); line-height: 1.75; margin: 1rem 0 2rem; }
+    .menu-photo { border-radius: 3px; overflow: hidden; height: 260px; position: relative; }
+    .menu-photo img { width: 100%; height: 100%; object-fit: cover; }
+    .menu-photo-caption { position: absolute; bottom: 0; left: 0; right: 0; padding: 1rem 1.2rem; background: linear-gradient(to top, rgba(26,16,24,.75) 0%, transparent 100%); font-size: .72rem; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; color: rgba(245,240,232,.7); }
+    .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .menu-card { background: var(--white); padding: 1.8rem; border-radius: 3px; border-top: 3px solid transparent; transition: border-color .25s, transform .2s, box-shadow .2s; }
+    .menu-card:hover { border-color: var(--purple); transform: translateY(-3px); box-shadow: 0 8px 32px rgba(135,88,206,.1); }
+    .menu-card-dark { background: var(--dark2) !important; border-color: var(--purple) !important; }
+    .menu-card-title { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; color: var(--text); margin-bottom: .6rem; }
+    .menu-card-title-light { color: var(--cream) !important; }
+    .menu-card-body { font-size: .85rem; color: var(--muted); line-height: 1.6; margin-bottom: .8rem; }
+    .menu-card-body-light { color: rgba(245,240,232,.55) !important; }
+    .menu-card-price { font-size: .8rem; font-weight: 500; color: var(--purple); letter-spacing: .04em; }
+
+    /* OPENINGSTIJDEN */
+    .hours-section { padding: 7rem 6rem; background: var(--dark); }
+    .hours-section .section-label { color: var(--purple2); }
+    .hours-section .section-title { color: var(--cream); }
+    .hours-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; margin-top: 3rem; }
+    .hours-table { width: 100%; border-collapse: collapse; }
+    .hours-table tr { border-bottom: 1px solid rgba(135,88,206,.1); }
+    .hours-table tr:last-child { border-bottom: none; }
+    .hours-table td { padding: .9rem 0; font-size: .95rem; }
+    .hours-table td:first-child { color: rgba(245,240,232,.5); width: 50%; }
+    .hours-table td:last-child { color: var(--cream); font-weight: 500; text-align: right; }
+    .hours-table tr.closed td { color: rgba(245,240,232,.25) !important; }
+    .hours-table tr.closed td:last-child { color: var(--purple2) !important; font-style: italic; }
+    .hours-note { margin-top: 2rem; padding: 1rem 1.2rem; background: rgba(135,88,206,.1); border-left: 3px solid var(--purple); border-radius: 0 3px 3px 0; }
+    .hours-note p { font-size: .83rem; color: rgba(245,240,232,.6); line-height: 1.6; }
+    .hours-note strong { color: var(--purple2); font-weight: 500; }
+    .hours-visual { overflow: hidden; border-radius: 3px; height: 100%; min-height: 300px; position: relative; }
+    .hours-visual img { width: 100%; height: 100%; object-fit: cover; }
+    .hours-visual-overlay { position: absolute; inset: 0; background: linear-gradient(135deg, rgba(135,88,206,.2), transparent 60%); }
+
+    /* GALLERY */
+    .beleving-section { padding: 7rem 6rem; background: var(--cream); }
+    .beleving-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; margin-top: 3rem; }
+    .beleving-item { position: relative; overflow: hidden; aspect-ratio: 4/5; background: var(--cream2); }
+    .beleving-item img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .6s ease; }
+    .beleving-item:hover img { transform: scale(1.06); }
+    .beleving-item-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(26,16,24,.75) 0%, transparent 55%); opacity: 0; transition: opacity .3s; }
+    .beleving-item:hover .beleving-item-overlay { opacity: 1; }
+    .beleving-item-label { position: absolute; bottom: 1.5rem; left: 1.5rem; font-family: 'Playfair Display', serif; font-size: 1.2rem; font-weight: 600; color: var(--cream); opacity: 0; transform: translateY(8px); transition: all .3s; }
+    .beleving-item:hover .beleving-item-label { opacity: 1; transform: translateY(0); }
+
+    /* CADEAUBON */
+    .cadeaubon-section { background: var(--purple); padding: 5rem 6rem; display: flex; align-items: center; justify-content: space-between; gap: 3rem; }
+    .cadeaubon-text .section-label { color: rgba(255,255,255,.6); }
+    .cadeaubon-text .section-title { color: var(--white); font-size: clamp(1.8rem, 3vw, 2.8rem); }
+    .cadeaubon-body { font-size: 1rem; color: rgba(255,255,255,.72); line-height: 1.7; max-width: 480px; margin-top: 1rem; }
+    .btn-white { background: var(--white); color: var(--purple); padding: 1rem 2.4rem; font-size: .88rem; font-weight: 500; letter-spacing: .07em; text-transform: uppercase; border: none; cursor: pointer; text-decoration: none; display: inline-block; border-radius: 3px; flex-shrink: 0; transition: background .2s, transform .15s; }
+    .btn-white:hover { background: var(--cream); transform: translateY(-1px); }
+
+    /* CONTACT */
+    .contact-section { padding: 7rem 6rem; background: var(--cream2); }
+    .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; margin-top: 3rem; }
+    .contact-block h3 { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700; color: var(--text); margin-bottom: 1.5rem; }
+    .contact-list { list-style: none; display: flex; flex-direction: column; gap: 1rem; }
+    .contact-list li { display: flex; align-items: flex-start; gap: .8rem; font-size: .9rem; color: var(--muted); line-height: 1.6; }
+    .contact-list li svg { width: 18px; height: 18px; flex-shrink: 0; margin-top: 1px; stroke: var(--purple); fill: none; stroke-width: 1.8; }
+    .contact-map { border-radius: 3px; overflow: hidden; height: 300px; }
+    .contact-map iframe { width: 100%; height: 100%; border: none; }
+
+    /* FOOTER */
+    footer { background: var(--dark); padding: 3.5rem 6rem 2rem; display: flex; flex-direction: column; gap: 2.5rem; }
+    .footer-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 3rem; }
+    .footer-brand-name { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700; color: var(--cream); }
+    .footer-brand-name span { color: var(--purple2); }
+    .footer-tagline { font-size: .82rem; color: rgba(245,240,232,.4); margin-top: .4rem; }
+    .footer-links { display: flex; gap: 4rem; }
+    .footer-col h4 { font-size: .7rem; font-weight: 500; letter-spacing: .15em; text-transform: uppercase; color: rgba(245,240,232,.4); margin-bottom: 1rem; }
+    .footer-col a { display: block; font-size: .85rem; color: rgba(245,240,232,.65); text-decoration: none; margin-bottom: .6rem; transition: color .2s; }
+    .footer-col a:hover { color: var(--purple2); }
+    .footer-bottom { display: flex; justify-content: space-between; align-items: center; padding-top: 2rem; border-top: 1px solid rgba(135,88,206,.1); font-size: .75rem; color: rgba(245,240,232,.3); }
+
+    /* ── CHATBOT ── */
+    #chatWrapper {
+      position: fixed; bottom: 0; right: 28px;
+      width: 420px; z-index: 9999;
+    }
+
+    /* Minimized bar */
+    .chat-minimized {
+      display: none; width: 100%; padding: 12px 16px;
+      align-items: center; justify-content: space-between; cursor: pointer;
+      box-shadow: 0 -4px 24px rgba(135,88,206,.2);
+      border-radius: 14px 14px 0 0;
+      border-top: 3px solid var(--purple);
+      background: var(--dark2);
+      transition: box-shadow .2s;
+    }
+    .chat-minimized:hover { box-shadow: 0 -8px 32px rgba(135,88,206,.3); }
+    .chat-minimized.zichtbaar { display: flex; }
+    .min-left { display: flex; align-items: center; gap: 10px; }
+    .min-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--purple); color: white; display: flex; align-items: center; justify-content: center; font-size: .72rem; font-weight: 700; flex-shrink: 0; }
+    .min-naam { font-size: .88rem; font-weight: 600; color: var(--cream); }
+    .min-status { font-size: .72rem; color: rgba(245,240,232,.5); display: flex; align-items: center; gap: .35rem; }
+    .min-status::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: #22c55e; display: block; }
+    .min-reserveer-btn { background: var(--purple); color: white; border: none; padding: .45rem 1rem; border-radius: 6px; font-size: .78rem; font-weight: 500; cursor: pointer; transition: background .2s; }
+    .min-reserveer-btn:hover { background: var(--purple3); }
+    .badge { display: none; background: #22c55e; color: white; width: 18px; height: 18px; border-radius: 50%; font-size: .6rem; font-weight: 700; align-items: center; justify-content: center; margin-left: 6px; }
+    .badge.zichtbaar { display: flex; }
+
+    /* Chat container */
+    .chat-container {
+      width: 100%; height: 600px;
+      background: #F8F5FC; border-radius: 14px 14px 0 0;
+      box-shadow: 0 -8px 48px rgba(135,88,206,.22), 0 0 0 1px rgba(135,88,206,.12);
+      display: flex; flex-direction: column; overflow: hidden;
+    }
+    .chat-container.verborgen { display: none; }
+    .chat-container.open-animatie { animation: chatOpen .35s cubic-bezier(.4,0,.2,1); }
+    @keyframes chatOpen { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Header */
+    .chat-header { background: var(--dark2); border-bottom: 3px solid var(--purple); flex-shrink: 0; }
+    .chat-header-top { display: flex; align-items: center; gap: .8rem; padding: .9rem 1rem .5rem; }
+    .header-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--purple); color: white; display: flex; align-items: center; justify-content: center; font-size: .72rem; font-weight: 700; flex-shrink: 0; }
+    .header-info { flex: 1; }
+    .header-naam { font-size: .9rem; font-weight: 600; color: var(--cream); }
+    .header-status { font-size: .72rem; color: rgba(245,240,232,.5); display: flex; align-items: center; gap: .35rem; }
+    .header-status::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: #22c55e; display: block; }
+    .header-min { background: none; border: none; cursor: pointer; color: rgba(245,240,232,.4); font-size: 1.1rem; line-height: 1; padding: .2rem; transition: color .2s; }
+    .header-min:hover { color: var(--cream); }
+
+    /* Status banner (open/gesloten) */
+    .status-banner { display: flex; align-items: center; gap: .5rem; padding: .4rem 1rem .7rem; font-size: .75rem; cursor: pointer; }
+    .status-banner.open { color: rgba(100,220,100,.8); }
+    .status-banner.gesloten { color: rgba(245,240,232,.35); }
+    .status-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .status-banner.open .status-dot { background: #22c55e; }
+    .status-banner.gesloten .status-dot { background: rgba(245,240,232,.3); }
+
+    /* Reserveer banner */
+    .reserveer-banner { display: flex; align-items: center; justify-content: space-between; padding: .6rem 1rem; background: rgba(135,88,206,.3); border-top: 1px solid rgba(135,88,206,.4); cursor: pointer; transition: background .2s; }
+    .reserveer-banner:hover { background: rgba(135,88,206,.45); }
+    .reserveer-banner-left { display: flex; align-items: center; gap: .6rem; }
+    .reserveer-banner-tekst { font-size: .82rem; font-weight: 600; color: #D4AAFF; }
+    .reserveer-banner-sub { font-size: .7rem; color: rgba(245,240,232,.65); }
+    .reserveer-banner-arrow { color: #D4AAFF; font-size: 1.2rem; }
+
+    /* Chat venster */
+    #chatvenster { flex: 1; overflow-y: auto; padding: 1rem; display: flex; flex-direction: column; gap: .6rem; }
+    #chatvenster::-webkit-scrollbar { width: 4px; }
+    #chatvenster::-webkit-scrollbar-thumb { background: rgba(135,88,206,.2); border-radius: 2px; }
+
+    /* Berichten */
+    .bericht-wrapper-bot { display: flex; align-items: flex-end; gap: 8px; }
+    .bericht-wrapper-jij { display: flex; align-items: flex-end; justify-content: flex-end; gap: 8px; }
+    .bericht-content { display: flex; flex-direction: column; gap: 3px; max-width: 80%; }
+    .msg-avatar { width: 28px; height: 28px; border-radius: 50%; background: var(--purple); color: white; display: flex; align-items: center; justify-content: center; font-size: .62rem; font-weight: 700; flex-shrink: 0; }
+    .naam { font-size: .68rem; color: var(--muted); margin-left: 2px; }
+    .bubble { padding: .65rem .9rem; font-size: .88rem; line-height: 1.55; border-radius: 12px; }
+    .bubble-bot { background: white; color: var(--text); border-radius: 4px 12px 12px 12px; box-shadow: 0 2px 8px rgba(0,0,0,.06); }
+    .bubble-jij { background: var(--purple); color: white; border-radius: 12px 4px 12px 12px; }
+    .bubble a { color: var(--purple); }
+    .bubble-bot a { color: var(--purple3); }
+
+    /* Typing */
+    .typing-wrapper { display: flex; align-items: center; gap: 8px; }
+    .typing-bubble { background: white; padding: .65rem .9rem; border-radius: 4px 12px 12px 12px; box-shadow: 0 2px 8px rgba(0,0,0,.06); }
+    .typing-dots { display: inline-flex; gap: 4px; align-items: center; }
+    .typing-dots span { width: 6px; height: 6px; border-radius: 50%; background: var(--purple); animation: dotBounce 1.2s infinite; }
+    .typing-dots span:nth-child(2) { animation-delay: .2s; }
+    .typing-dots span:nth-child(3) { animation-delay: .4s; }
+    @keyframes dotBounce { 0%,60%,100% { transform: translateY(0); } 30% { transform: translateY(-5px); } }
+
+    /* Snelknoppen */
+    #snelknoppen { padding: .5rem 1rem; display: flex; flex-wrap: wrap; gap: 6px; background: #F8F5FC; flex-shrink: 0; }
+    .snel-knop { background: white; color: var(--text); border: 1.5px solid rgba(135,88,206,.2); padding: .4rem .85rem; border-radius: 20px; font-size: .78rem; cursor: pointer; transition: all .2s; white-space: nowrap; }
+    .snel-knop:hover { background: var(--purple); color: white; border-color: var(--purple); }
+
+    /* Invoer */
+    .chat-input { display: flex; gap: .6rem; padding: .8rem 1rem; background: white; border-top: 1px solid rgba(135,88,206,.12); flex-shrink: 0; }
+    #invoer { flex: 1; padding: .6rem .9rem; font-size: .88rem; border: 1.5px solid rgba(135,88,206,.2); border-radius: 8px; outline: none; font-family: 'DM Sans', sans-serif; color: var(--text); background: #fafafa; transition: border-color .2s; }
+    #invoer:focus { border-color: var(--purple); background: white; }
+    #invoer::placeholder { color: #bbb; }
+    #knop { width: 38px; height: 38px; border-radius: 8px; background: var(--purple); border: none; cursor: pointer; color: white; display: flex; align-items: center; justify-content: center; transition: background .2s, transform .15s; flex-shrink: 0; font-size: .9rem; }
+    #knop:hover { background: var(--purple3); transform: scale(1.05); }
+
+    /* Booking form in chat */
+    .booking-chat-wrapper { margin-top: 8px; animation: bubbleIn .3s ease; }
+    @keyframes bubbleIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    .booking-chat-form { background: white; border-radius: 12px; padding: 1rem; display: flex; flex-direction: column; gap: 8px; border: 1.5px solid rgba(135,88,206,.15); max-width: 320px; }
+    .booking-chat-form input, .booking-chat-form select { width: 100%; padding: .55rem .75rem; border: 1.5px solid #e8e3f0; border-radius: 7px; font-size: .83rem; font-family: 'DM Sans', sans-serif; color: var(--text); background: #fafafa; outline: none; transition: border-color .2s; }
+    .booking-chat-form input:focus, .booking-chat-form select:focus { border-color: var(--purple); }
+    .booking-chat-form input::placeholder { color: #bbb; font-size: .8rem; }
+    .booking-row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .booking-slot-label { font-size: .72rem; font-weight: 500; color: var(--muted); letter-spacing: .06em; text-transform: uppercase; margin-top: 4px; }
+    .booking-slot-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; }
+    .booking-slot { padding: .4rem .3rem; border: 1.5px solid rgba(135,88,206,.2); border-radius: 6px; font-size: .78rem; text-align: center; cursor: pointer; color: var(--text); transition: all .15s; }
+    .booking-slot:hover { border-color: var(--purple); background: rgba(135,88,206,.06); }
+    .booking-slot-gekozen { background: var(--purple) !important; color: white !important; border-color: var(--purple) !important; }
+    .booking-slot-vol { background: #f5f5f5; color: #ccc; cursor: not-allowed; border-color: #e8e8e8; text-decoration: line-through; }
+    .booking-slot-dinsdag { grid-column: 1/-1; text-align: center; color: rgba(135,88,206,.6); font-size: .8rem; padding: .5rem; }
+    .booking-err { font-size: .8rem; color: #e44; padding: .4rem; }
+    .booking-verstuur-btn { background: var(--purple); color: white; border: none; padding: .75rem; border-radius: 8px; font-size: .85rem; font-weight: 500; cursor: pointer; transition: background .2s; margin-top: 4px; }
+    .booking-verstuur-btn:hover { background: var(--purple3); }
+    .booking-verstuur-btn:disabled { opacity: .6; cursor: not-allowed; }
+
+    /* Rating */
+    .rating-wrapper { background: white; border-radius: 12px; padding: 1rem; max-width: 280px; }
+    .rating-label { font-size: .8rem; color: var(--muted); margin-bottom: .5rem; }
+    .ster-rij { display: flex; gap: 6px; margin-bottom: .6rem; }
+    .ster { font-size: 1.5rem; cursor: pointer; filter: grayscale(1); transition: filter .15s, transform .1s; }
+    .ster:hover, .ster.actief { filter: none; transform: scale(1.15); }
+    .rating-bevestig { background: var(--purple); color: white; border: none; padding: .5rem 1.2rem; border-radius: 6px; font-size: .82rem; cursor: pointer; transition: background .2s; }
+    .rating-bevestig:hover { background: var(--purple3); }
+
+
+    /* ANIMATIONS */
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .reveal { opacity: 0; transform: translateY(28px); transition: opacity .7s ease, transform .7s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-delay-1 { transition-delay: .15s; }
+    .reveal-delay-2 { transition-delay: .3s; }
+
+    /* RESPONSIVE */
+    @media (max-width: 1024px) {
+      nav { padding: 1rem 2rem; }
+      .hero-content { padding: 0 3rem 4rem; }
+      .sfeer-section, .menu-section, .hours-section, .beleving-section, .cadeaubon-section, .contact-section { padding: 5rem 3rem; }
+      footer { padding: 3rem 3rem 2rem; }
+      .menu-layout { grid-template-columns: 1fr; gap: 3rem; }
+      .menu-sticky { position: static; }
+    }
+    @media (max-width: 768px) {
+      nav { padding: .9rem 1.5rem; }
+      .nav-links { display: none; }
+      .mobile-menu-btn { display: flex; }
+      .hero-content { padding: 0 1.5rem 3rem; }
+      .hero-stats { display: none; }
+      .shortcuts { grid-template-columns: 1fr; height: auto; }
+      .shortcut-card { height: 220px; }
+      .info-strip { flex-direction: column; }
+      .info-strip-item { border-right: none; border-bottom: 1px solid rgba(135,88,206,.1); }
+      .sfeer-section, .menu-section, .hours-section, .beleving-section, .cadeaubon-section, .contact-section { padding: 4rem 1.5rem; }
+      .sfeer-grid { grid-template-columns: 1fr; grid-template-rows: auto; }
+      .sfeer-main { grid-row: 1; height: 280px; }
+      .sfeer-text { grid-column: 1; }
+      .menu-grid { grid-template-columns: 1fr; }
+      .hours-layout, .contact-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+      .beleving-grid { grid-template-columns: 1fr 1fr; }
+      .cadeaubon-section { flex-direction: column; text-align: center; }
+      .footer-top { flex-direction: column; gap: 2rem; }
+      .footer-links { flex-wrap: wrap; gap: 2rem; }
+      footer { padding: 2.5rem 1.5rem 1.5rem; }
+      #chatWrapper { width: 100%; right: 0; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">
+    <img src="{{ url_for('static', filename='logo.png') }}" alt="Bagel Alley" onerror="this.style.display='none'">
+    <span class="nav-logo-text">Bagel <span>Alley</span></span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#menu">Menu</a></li>
+    <li><a href="#sfeer">Over Ons</a></li>
+    <li><a href="#tijden">Openingstijden</a></li>
+    <li><a href="#contact">Contact</a></li>
+    <li><a href="/jobs" class="nav-jobs">Jobs</a></li>
+    <li><a href="/reserveren" class="nav-cta">Reserveren</a></li>
+  </ul>
+  <button class="mobile-menu-btn" aria-label="Menu"><span></span><span></span><span></span></button>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hero-bg"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <div class="hero-badge">Wassenaar · Langstraat 42</div>
+    <h1>Elke hap<br>een <em>verhaal.</em></h1>
+    <p class="hero-desc">Breakfast, Lunch, Tea &amp; Takeaway. Verse ingrediënten, Amerikaans geïnspireerd, bereid met liefde — in het hart van Wassenaar.</p>
+    <div class="hero-buttons">
+      <a href="/reserveren" class="btn-purple">Tafel reserveren</a>
+      <a href="#menu" class="btn-ghost-light">Bekijk het menu</a>
+    </div>
+  </div>
+  <div class="hero-stats">
+    <div class="hero-stat"><span class="hero-stat-number">25+</span><span class="hero-stat-label">Bagel soorten</span></div>
+    <div class="hero-stat"><span class="hero-stat-number">6×</span><span class="hero-stat-label">Per week open</span></div>
+    <div class="hero-stat" style="background:rgba(135,88,206,.25);border-left-color:rgba(135,88,206,.3)"><span class="hero-stat-number" style="font-size:1.1rem">High Tea</span><span class="hero-stat-label" style="color:rgba(196,165,240,.8)">Op reservering</span></div>
+  </div>
+</section>
+
+<!-- SHORTCUTS -->
+<div class="shortcuts">
+  <a href="#menu" class="shortcut-card">
+    <div class="shortcut-card-bg" style="background-image:url('{{ url_for('static', filename='fotos/pexels-anchornhaven-43716305-29445728.jpg') }}')"></div>
+    <div class="shortcut-overlay"></div>
+    <div class="shortcut-body">
+      <span class="shortcut-label">Ons aanbod</span>
+      <h2 class="shortcut-title">Bagels, High Tea<br>&amp; Tapas</h2>
+      <span class="shortcut-link">Bekijk de kaart →</span>
+    </div>
+  </a>
+  <a href="/reserveren" class="shortcut-card">
+    <div class="shortcut-card-bg" style="background-image:url('{{ url_for('static', filename='fotos/pexels-planka-29783408.jpg') }}')"></div>
+    <div class="shortcut-overlay"></div>
+    <div class="shortcut-body">
+      <span class="shortcut-label">Reserveren</span>
+      <h2 class="shortcut-title">Tafel boeken,<br>direct bevestigd</h2>
+      <span class="shortcut-link">Reserveer nu →</span>
+    </div>
+  </a>
+</div>
+
+<!-- INFO STRIP -->
+<div class="info-strip">
+  <div class="info-strip-item">
+    <div class="strip-icon"><svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l4 2M12 2a10 10 0 100 20A10 10 0 0012 2z"/></svg></div>
+    <div><div class="strip-text-main">Ma–Zo (excl. Di)</div><div class="strip-text-sub">08:00 – 16:00 uur</div></div>
+  </div>
+  <div class="info-strip-item">
+    <div class="strip-icon"><svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0zM15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg></div>
+    <div><div class="strip-text-main">Langstraat 42</div><div class="strip-text-sub">2242 KM Wassenaar</div></div>
+  </div>
+  <div class="info-strip-item">
+    <div class="strip-icon"><svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg></div>
+    <div><div class="strip-text-main">070-514 61 16</div><div class="strip-text-sub">info@bagelalley.nl</div></div>
+  </div>
+  <div class="info-strip-item" style="background:rgba(135,88,206,.12)">
+    <div class="strip-icon" style="background:rgba(135,88,206,.3)"><svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
+    <div><div class="strip-text-main" style="color:#C4A5F0;font-weight:600">Donderdag open!</div><div class="strip-text-sub">Nu 6 dagen per week voor je klaar</div></div>
+  </div>
+</div>
+
+<!-- SFEER -->
+<section class="sfeer-section" id="sfeer">
+  <span class="section-label reveal">De sfeer</span>
+  <h2 class="section-title reveal">Warme gastvrijheid,<br>elke dag vers.</h2>
+  <div class="sfeer-grid">
+    <div class="sfeer-img sfeer-main reveal">
+      <img src="{{ url_for('static', filename='fotos/pexels-casnafu-24796900.jpg') }}" alt="Bagel Alley sfeer" loading="lazy">
+    </div>
+    <div class="sfeer-img reveal reveal-delay-1">
+      <img src="{{ url_for('static', filename='fotos/pexels-amar-28056733.jpg') }}" alt="Bagel met koffie" loading="lazy">
+    </div>
+    <div class="sfeer-img reveal reveal-delay-2">
+      <img src="{{ url_for('static', filename='fotos/pexels-fedigioia-11634304.jpg') }}" alt="Artisan bagel" loading="lazy">
+    </div>
+    <div class="sfeer-text reveal reveal-delay-1">
+      <span class="section-label" style="color:var(--purple2)">Onze belofte</span>
+      <h3 class="sfeer-text-title">Ambachtelijk bereid,<br>altijd verse ingrediënten</h3>
+      <p class="sfeer-text-body">Elke dag beginnen we opnieuw. Verse ingrediënten, zelfgemaakte producten en een warme sfeer — dat is waar Bagel Alley voor staat.</p>
+      <a href="#menu" class="sfeer-link">Bekijk de menukaart →</a>
+    </div>
+  </div>
+</section>
+
+<!-- MENU -->
+<section class="menu-section" id="menu">
+  <div class="menu-layout">
+    <div class="menu-sticky">
+      <span class="section-label reveal">Onze kaart</span>
+      <h2 class="section-title reveal">Meer dan<br>alleen<br>een bagel.</h2>
+      <p class="menu-section-body reveal">Van klassieke bagels met cream cheese tot uitgebreide High Tea arrangementen. Alles vers bereid in onze eigen keuken.</p>
+      <div class="menu-photo reveal reveal-delay-1">
+        <img src="{{ url_for('static', filename='fotos/pexels-barbara-g-135944487-11599632.jpg') }}" alt="Vers gebakken bagels" loading="lazy">
+        <div class="menu-photo-caption">Vers uit de keuken</div>
+      </div>
+      <div style="margin-top:1.8rem;display:flex;flex-direction:column;gap:.75rem;" class="reveal">
+        <a href="/menu" style="display:inline-flex;align-items:center;gap:.5rem;background:var(--purple);color:white;padding:.75rem 1.4rem;border-radius:3px;font-size:.82rem;font-weight:500;letter-spacing:.07em;text-transform:uppercase;text-decoration:none;transition:background .2s;" onmouseover="this.style.background='var(--purple3)'" onmouseout="this.style.background='var(--purple)'">
+          📋 Bekijk de volledige menukaart
+        </a>
+        <a href="/shop" style="display:inline-flex;align-items:center;gap:.5rem;background:transparent;color:var(--muted);padding:.75rem 1.4rem;border-radius:3px;font-size:.82rem;font-weight:500;letter-spacing:.07em;text-transform:uppercase;text-decoration:none;border:1.5px solid rgba(135,88,206,.25);transition:all .2s;" onmouseover="this.style.borderColor='var(--purple)';this.style.color='var(--purple)'" onmouseout="this.style.borderColor='rgba(135,88,206,.25)';this.style.color='var(--muted)'">
+          🛍️ Online bestellen
+        </a>
+      </div>
+    </div>
+    <div class="menu-grid">
+      <div class="menu-card reveal">
+        <h3 class="menu-card-title">Bagels &amp; Toppings</h3>
+        <p class="menu-card-body">Klassiek of signature — met zalm, kip, avocado, eggs &amp; more. Zelf samenstellen of kies een favoriet.</p>
+        <span class="menu-card-price">Vanaf €8,50</span>
+      </div>
+      <div class="menu-card reveal reveal-delay-1">
+        <h3 class="menu-card-title">High Tea</h3>
+        <p class="menu-card-body">Een heerlijk arrangement met mini sandwiches, scones, zoetjes en onbeperkt thee. Op reservering.</p>
+        <span class="menu-card-price">Vanaf €22,50 p.p.</span>
+      </div>
+      <div class="menu-card reveal reveal-delay-1">
+        <h3 class="menu-card-title">Tapas &amp; Sharing</h3>
+        <p class="menu-card-body">Kleine gerechten, grote smaak. Perfect om te delen met vrienden of collega's aan tafel.</p>
+        <span class="menu-card-price">Vanaf €4,50 p.stuk</span>
+      </div>
+      <div class="menu-card reveal reveal-delay-2">
+        <h3 class="menu-card-title">Takeaway</h3>
+        <p class="menu-card-body">Alles wat we serveren, ook om mee te nemen. Bagels, salades en vers gebak voor onderweg.</p>
+        <span class="menu-card-price">Zelfde prijs</span>
+      </div>
+      <div class="menu-card reveal reveal-delay-2">
+        <h3 class="menu-card-title">Koffie &amp; Thee</h3>
+        <p class="menu-card-body">Van ochtendkoffie tot middagthee. Specialty koffie, verse thee en koude dranken.</p>
+        <span class="menu-card-price">Vanaf €2,50</span>
+      </div>
+      <div class="menu-card menu-card-dark reveal">
+        <span class="section-label" style="color:var(--purple2)">Cadeaubon</span>
+        <h3 class="menu-card-title menu-card-title-light">Geef een<br>smaakvolle beleving</h3>
+        <p class="menu-card-body menu-card-body-light">Cadeaubonnen beschikbaar vanaf €5. Het perfecte cadeau voor ieder moment.</p>
+        <a href="#cadeaubon" class="sfeer-link" style="margin-top:.8rem">Meer info →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- OPENINGSTIJDEN -->
+<section class="hours-section" id="tijden">
+  <span class="section-label reveal">Wanneer</span>
+  <h2 class="section-title reveal">Altijd een<br>tafel voor je klaar.</h2>
+  <div class="hours-layout">
+    <div class="reveal">
+      <table class="hours-table">
+        <tr><td>Maandag</td><td>08:00 – 16:00</td></tr>
+        <tr class="closed"><td>Dinsdag</td><td>Gesloten</td></tr>
+        <tr><td>Woensdag</td><td>08:00 – 16:00</td></tr>
+        <tr><td>Donderdag</td><td>08:00 – 16:00</td></tr>
+        <tr><td>Vrijdag</td><td>08:00 – 16:00</td></tr>
+        <tr><td>Zaterdag</td><td>08:00 – 16:00</td></tr>
+        <tr><td>Zondag</td><td>08:00 – 16:00</td></tr>
+      </table>
+      <div class="hours-note"><p><strong>🥯 Keuken sluit om 15:30.</strong> Op nationale feestdagen kunnen de tijden afwijken. Bel ons voor actuele info.</p></div>
+      <a href="/reserveren" class="btn-purple" style="display:inline-block;margin-top:2rem">Tafel reserveren</a>
+    </div>
+    <div class="hours-visual reveal reveal-delay-1">
+      <img src="{{ url_for('static', filename='fotos/pexels-marina-gr-109305987-19574245.jpg') }}" alt="Bagel Alley display" loading="lazy">
+      <div class="hours-visual-overlay"></div>
+    </div>
+  </div>
+</section>
+
+<!-- GALLERY -->
+<section class="beleving-section">
+  <span class="section-label reveal">Sfeerimpressies</span>
+  <h2 class="section-title reveal">Proef de sfeer</h2>
+  <div class="beleving-grid">
+    <div class="beleving-item reveal">
+      <img src="{{ url_for('static', filename='fotos/pexels-amar-28056766.jpg') }}" alt="Bagel" loading="lazy">
+      <div class="beleving-item-overlay"></div>
+      <div class="beleving-item-label">Vers gebakken</div>
+    </div>
+    <div class="beleving-item reveal reveal-delay-1">
+      <img src="{{ url_for('static', filename='fotos/pexels-christina-petsos-200616875-19712196.jpg') }}" alt="Egg bagel" loading="lazy">
+      <div class="beleving-item-overlay"></div>
+      <div class="beleving-item-label">Signature bagels</div>
+    </div>
+    <div class="beleving-item reveal reveal-delay-2">
+      <img src="{{ url_for('static', filename='fotos/pexels-19x14-8527233.jpg') }}" alt="Bagel hart" loading="lazy">
+      <div class="beleving-item-overlay"></div>
+      <div class="beleving-item-label">Met liefde gemaakt</div>
+    </div>
+  </div>
+</section>
+
+<!-- CADEAUBON -->
+<section class="cadeaubon-section" id="cadeaubon">
+  <div class="cadeaubon-text">
+    <span class="section-label">Cadeau geven</span>
+    <h2 class="section-title">Geef een<br>smaakvolle beleving.</h2>
+    <p class="cadeaubon-body">Cadeaubonnen beschikbaar vanaf €5. Het perfecte cadeau voor een verjaardag, jubileum of gewoon omdat je aan iemand denkt. Verkrijgbaar in de zaak.</p>
+  </div>
+  <a href="#contact" class="btn-white">Meer informatie</a>
+</section>
+
+<!-- CONTACT -->
+<section class="contact-section" id="contact">
+  <span class="section-label reveal">Contact</span>
+  <h2 class="section-title reveal">We zijn er voor je.</h2>
+  <div class="contact-grid">
+    <div class="contact-block reveal">
+      <h3>Vind ons</h3>
+      <ul class="contact-list">
+        <li><svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0zM15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>Langstraat 42, 2242 KM Wassenaar</li>
+        <li><svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>070-514 61 16</li>
+        <li><svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>info@bagelalley.nl</li>
+        <li><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3"/></svg>Ma–Zo (excl. Di): 08:00 – 16:00</li>
+        <li><svg viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg><a href="/jobs" style="color:inherit;text-decoration:none;border-bottom:1px solid rgba(245,240,232,.15);">Wij zoeken collega's → bekijk vacatures</a></li>
+      </ul>
+    </div>
+    <div class="contact-map reveal reveal-delay-1">
+      <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2450.1!2d4.3913!3d52.1502!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47c5be3f2b000001%3A0x1!2sLangstraat+42%2C+Wassenaar!5e0!3m2!1snl!2snl!4v1" allowfullscreen loading="lazy"></iframe>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <div class="footer-brand-name">Bagel <span>Alley</span></div>
+      <div class="footer-tagline">Breakfast · Lunch · Tea · Take Away — Wassenaar</div>
+    </div>
+    <div class="footer-links">
+      <div class="footer-col">
+        <h4>Menu</h4>
+        <a href="/menu">Volledige menukaart</a>
+        <a href="#menu">Bagels &amp; Toppings</a>
+        <a href="#menu">High Tea</a>
+        <a href="#menu">Tapas</a>
+        <a href="/shop">Online Shop</a>
+      </div>
+      <div class="footer-col">
+        <h4>Bezoek</h4>
+        <a href="#tijden">Openingstijden</a>
+        <a href="/reserveren">Reserveren</a>
+        <a href="#contact">Contact</a>
+        <a href="/jobs">Jobs</a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2025 Bagel Alley Wassenaar. Alle rechten voorbehouden.</span>
+    <span>Langstraat 42, 2242 KM Wassenaar</span>
+  </div>
+</footer>
+
+<!-- ── CHATBOT ── -->
+<div id="chatWrapper">
+  <!-- Minimized bar -->
+  <div class="chat-minimized" id="minimizedBar" onclick="openChat()">
+    <div class="min-left">
+      <div class="min-avatar">{{ bedrijf.avatar_initialen }}</div>
+      <div>
+        <div class="min-naam">{{ bedrijf.avatar_naam }}</div>
+        <div class="min-status">Online</div>
+      </div>
+      <span class="badge" id="badge">1</span>
+    </div>
+    <button class="min-reserveer-btn" onclick="event.stopPropagation();openChatEnReserveer()">📅 Reserveer nu</button>
+  </div>
+
+  <!-- Chat container -->
+  <div class="chat-container verborgen" id="chatContainer">
+    <div class="chat-header">
+      <div class="chat-header-top">
+        <div class="header-avatar">{{ bedrijf.avatar_initialen }}</div>
+        <div class="header-info">
+          <div class="header-naam">{{ bedrijf.avatar_naam }}</div>
+          <div class="header-status">Online — {{ bedrijf.naam }}</div>
+        </div>
+        <button class="header-min" onclick="minimizeChat()" title="Minimaliseren">╌</button>
+      </div>
+      <div class="status-banner" id="statusBanner" onclick="bannerKlik()">
+        <div class="status-dot"></div>
+        <span id="statusTekst">Laden...</span>
+      </div>
+      <div class="reserveer-banner" onclick="toonBookingFormulier()">
+        <div class="reserveer-banner-left">
+          <span>📅</span>
+          <div>
+            <div class="reserveer-banner-tekst">Reserveer een tafel</div>
+            <div class="reserveer-banner-sub">Direct boeken — geen wachttijd</div>
+          </div>
+        </div>
+        <span class="reserveer-banner-arrow">›</span>
+      </div>
+    </div>
+
+    <div id="chatvenster"></div>
+    <div id="snelknoppen"></div>
+
+    <div class="chat-input">
+      <input id="invoer" type="text" placeholder="Typ een bericht..." onkeydown="if(event.key==='Enter')verstuur()">
+      <button id="knop" onclick="verstuur()">➤</button>
+    </div>
+  </div>
+</div>
+
+
+<script>
+// CONFIG
+const AVATAR_INITIALEN = "{{ bedrijf.avatar_initialen }}";
+const AVATAR_NAAM      = "{{ bedrijf.avatar_naam }}";
+const BEDRIJF_NAAM     = "{{ bedrijf.naam }}";
+const OPENINGSTIJDEN   = {{ bedrijf.openingstijden | tojson }};
+
+let conversatieStap = "start";
+let gekozenSlot = null;
+let heeftGereageerd = false;
+
+// ── OPEN/GESLOTEN ──
+function checkOpenStatus() {
+  const nu = new Date();
+  const dag = nu.getDay();
+  const dagIndex = dag === 0 ? 6 : dag - 1;
+  const tijden = OPENINGSTIJDEN[dagIndex];
+  const banner = document.getElementById("statusBanner");
+  const tekst  = document.getElementById("statusTekst");
+  if (!tijden) { banner.className = "status-banner gesloten"; tekst.textContent = "Vandaag gesloten"; return; }
+  const [oh,om] = tijden[0].split(":").map(Number);
+  const [sh,sm] = tijden[1].split(":").map(Number);
+  const now = nu.getHours()*60+nu.getMinutes();
+  const isOpen = now >= oh*60+om && now < sh*60+sm;
+  if (isOpen) { banner.className="status-banner open"; tekst.textContent=`Nu open — sluit om ${tijden[1]}`; }
+  else { banner.className="status-banner gesloten"; const m=OPENINGSTIJDEN[(dagIndex+1)%7]; tekst.textContent=m?`Gesloten — morgen open om ${m[0]}`:"Vandaag gesloten"; }
+}
+
+function bannerKlik() { verstuurNaarBot("__openingstijden_banner__"); }
+
+// ── MINIMIZE/OPEN ──
+function minimizeChat() {
+  document.getElementById("chatContainer").classList.add("verborgen");
+  document.getElementById("minimizedBar").classList.add("zichtbaar");
+}
+function openChatEnReserveer() { openChat(); setTimeout(() => toonBookingFormulier(), 350); }
+function openChat() {
+  document.getElementById("chatContainer").classList.remove("verborgen");
+  document.getElementById("chatContainer").classList.add("open-animatie");
+  document.getElementById("minimizedBar").classList.remove("zichtbaar");
+  document.getElementById("badge").classList.remove("zichtbaar");
+  setTimeout(() => document.getElementById("chatContainer").classList.remove("open-animatie"), 400);
+}
+
+// ── SNELKNOPPEN ──
+const snelknopSets = {
+  start: [
+    { label: "⏱ Openingstijden", msg: "Wat zijn jullie openingstijden?" },
+    { label: "🥯 Menu",           msg: "Wat staat er op het menu?" },
+    { label: "🫖 High Tea",       msg: "Vertel me meer over de High Tea" },
+    { label: "📅 Reserveren",     msg: "__booking__" },
+  ],
+  na_menu: [
+    { label: "🥯 Bagels",     msg: "Vertel me meer over de bagels" },
+    { label: "🫖 High Tea",   msg: "Vertel me meer over de High Tea" },
+    { label: "🫒 Tapas",      msg: "Wat hebben jullie aan tapas?" },
+    { label: "📅 Reserveren", msg: "__booking__" },
+  ],
+  na_openingstijden: [
+    { label: "📍 Adres",      msg: "Waar zijn jullie gevestigd?" },
+    { label: "📞 Bellen",     msg: "Hoe kan ik jullie bereiken?" },
+    { label: "📅 Reserveren", msg: "__booking__" },
+  ],
+  na_contact: [
+    { label: "⏱ Tijden",      msg: "Wat zijn jullie openingstijden?" },
+    { label: "📍 Adres",      msg: "Waar zijn jullie gevestigd?" },
+    { label: "📅 Reserveren", msg: "__booking__" },
+  ],
+  einde: [
+    { label: "⭐ Geef beoordeling", msg: "__rating__" },
+  ],
+};
+
+function zetSnelknoppen(set) {
+  const container = document.getElementById("snelknoppen");
+  container.innerHTML = "";
+  (snelknopSets[set] || snelknopSets.start).forEach(k => {
+    const btn = document.createElement("button");
+    btn.className = "snel-knop";
+    btn.textContent = k.label;
+    btn.onclick = () => {
+      if (k.msg === "__rating__")  { toonRating(); return; }
+      if (k.msg === "__booking__") { toonBookingFormulier(); return; }
+      voegJijToe(k.label.replace(/^[^\s]+\s/, ""));
+      verstuurNaarBot(k.msg);
+    };
+    container.appendChild(btn);
+  });
+}
+
+// ── TYPING INDICATOR ──
+function voegTypingToe() {
+  const div = document.getElementById("chatvenster");
+  const w = document.createElement("div");
+  w.className = "typing-wrapper"; w.id = "typingIndicator";
+  w.innerHTML = `<div class="msg-avatar">${AVATAR_INITIALEN}</div><div class="typing-bubble"><div class="typing-dots"><span></span><span></span><span></span></div></div>`;
+  div.appendChild(w);
+  div.scrollTop = div.scrollHeight;
+}
+function verwijderTyping() { const t=document.getElementById("typingIndicator"); if(t) t.remove(); }
+
+// ── BOT BERICHT ──
+async function voegBotToe(tekst) {
+  verwijderTyping();
+  const div = document.getElementById("chatvenster");
+  const w = document.createElement("div"); w.className = "bericht-wrapper-bot";
+  const content = document.createElement("div"); content.className = "bericht-content";
+  const naam = document.createElement("span"); naam.className = "naam"; naam.textContent = AVATAR_NAAM;
+  const bubbel = document.createElement("div"); bubbel.className = "bubble bubble-bot";
+  bubbel.innerHTML = tekst;
+  content.appendChild(naam); content.appendChild(bubbel); w.innerHTML=`<div class="msg-avatar">${AVATAR_INITIALEN}</div>`; w.appendChild(content);
+  div.appendChild(w); div.scrollTop = div.scrollHeight;
+}
+
+// ── JIJ BERICHT ──
+function voegJijToe(tekst) {
+  const div = document.getElementById("chatvenster");
+  const w = document.createElement("div"); w.className = "bericht-wrapper-jij";
+  w.innerHTML = `<div class="bericht-content"><div class="bubble bubble-jij">${tekst}</div></div>`;
+  div.appendChild(w); div.scrollTop = div.scrollHeight;
+}
+
+// ── VERSTUREN ──
+function verstuur() {
+  const invoer = document.getElementById("invoer");
+  const tekst = invoer.value.trim();
+  if (!tekst) return;
+  invoer.value = "";
+  voegJijToe(tekst);
+  verstuurNaarBot(tekst);
+}
+
+async function verstuurNaarBot(bericht) {
+  // Snelknop contexten bijhouden
+  if (bericht.includes("openingstijden") || bericht.includes("open") || bericht.includes("tijden") || bericht === "__openingstijden_banner__")
+    setTimeout(() => zetSnelknoppen("na_openingstijden"), 1200);
+  else if (bericht.includes("menu") || bericht.includes("eten") || bericht.includes("kaart"))
+    setTimeout(() => zetSnelknoppen("na_menu"), 1200);
+  else if (bericht.includes("contact") || bericht.includes("bellen") || bericht.includes("bereiken"))
+    setTimeout(() => zetSnelknoppen("na_contact"), 1200);
+
+  // Reserveer keywords → inline booking form
+  if (/reserv|tafel|boek|plekje/i.test(bericht) && bericht !== "__openingstijden_banner__") {
+    voegTypingToe();
+    setTimeout(() => { verwijderTyping(); toonBookingFormulier(); }, 600);
+    return;
+  }
+
+  voegTypingToe();
+  try {
+    const r = await fetch("/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ bericht })
+    });
+    const data = await r.json();
+    verwijderTyping();
+    const antwoord = data.antwoord || "Dat weet ik niet zeker. Bel ons op 070-514 61 16!";
+    if (antwoord === "STOP") {
+      await voegBotToe("Tot ziens! 👋 We zien je graag binnenkort bij Bagel Alley!");
+      zetSnelknoppen("einde");
+    } else {
+      await voegBotToe(antwoord);
+    }
+  } catch {
+    verwijderTyping();
+    await voegBotToe("Oeps, er ging iets mis. Bel ons op 070-514 61 16.");
+  }
+}
+
+// ── SLOT HELPERS ──
+function lokaalDatum(d) {
+  const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,'0'), da=String(d.getDate()).padStart(2,'0');
+  return `${y}-${m}-${da}`;
+}
+function isDinsdag(datum) { return new Date(datum+'T12:00:00').getDay() === 2; }
+
+async function haalVolleSlotsOp(datum) {
+  try {
+    const r = await fetch(`/volle-slots?datum=${datum}`);
+    const d = await r.json();
+    return d.volle_slots || [];
+  } catch { return []; }
+}
+
+function bouwSlotGrid(vollSlots, gesloten) {
+  if (gesloten) return `<div class="booking-slot-dinsdag">Bagel Alley is dinsdag gesloten</div>`;
+  const slots = ["08:00","08:30","09:00","09:30","10:00","10:30","11:00","11:30","12:00","12:30","13:00","13:30","14:00","14:30","15:00","15:30"];
+  return slots.map(s => vollSlots.includes(s)
+    ? `<div class="booking-slot booking-slot-vol" data-tijd="${s}">${s}</div>`
+    : `<div class="booking-slot" data-tijd="${s}">${s}</div>`
+  ).join("");
+}
+
+async function verversSlots() {
+  const datum = document.getElementById("bkDatum")?.value;
+  if (!datum) return;
+  gekozenSlot = null;
+  const grid = document.getElementById("bkSlotGrid");
+  if (!grid) return;
+  if (isDinsdag(datum)) { grid.innerHTML = bouwSlotGrid([], true); return; }
+  grid.innerHTML = `<div style="grid-column:1/-1;padding:6px;font-size:11px;color:#aaa;text-align:center">Laden...</div>`;
+  const vollSlots = await haalVolleSlotsOp(datum);
+  grid.innerHTML = bouwSlotGrid(vollSlots, false);
+  grid.querySelectorAll(".booking-slot:not(.booking-slot-vol)").forEach(el => el.addEventListener("click", () => kiesSlot(el, el.dataset.tijd)));
+}
+
+// ── BOOKING FORMULIER ──
+async function toonBookingFormulier() {
+  document.querySelectorAll(".booking-chat-wrapper").forEach(e => e.remove());
+  gekozenSlot = null;
+  const chatvenster = document.getElementById("chatvenster");
+  const nu = new Date();
+  const vandaag = lokaalDatum(nu);
+  const gesloten = isDinsdag(vandaag);
+  const vollSlots = gesloten ? [] : await haalVolleSlotsOp(vandaag);
+
+  const w = document.createElement("div"); w.className = "bericht-wrapper-bot";
+  w.innerHTML = `<div class="msg-avatar">${AVATAR_INITIALEN}</div>`;
+  const content = document.createElement("div"); content.className = "bericht-content"; content.style.maxWidth = "92%";
+  const naam = document.createElement("span"); naam.className = "naam"; naam.textContent = AVATAR_NAAM;
+  const bubbel = document.createElement("div"); bubbel.className = "bubble bubble-bot";
+  bubbel.textContent = "Super! Vul hieronder je gegevens in en kies een tijdslot:";
+
+  const formWrapper = document.createElement("div"); formWrapper.className = "booking-chat-wrapper";
+  const form = document.createElement("div"); form.className = "booking-chat-form";
+  form.innerHTML = `
+    <input type="text"  id="bkNaam"   placeholder="Jouw naam" autocomplete="name">
+    <input type="email" id="bkEmail"  placeholder="E-mailadres" autocomplete="email">
+    <input type="tel"   id="bkTel"    placeholder="Telefoonnummer (optioneel)" autocomplete="tel">
+    <div class="booking-row2">
+      <input type="date" id="bkDatum" value="${vandaag}" min="${vandaag}">
+      <select id="bkGasten">
+        <option value="1">1 gast</option><option value="2" selected>2 gasten</option>
+        <option value="3">3 gasten</option><option value="4">4 gasten</option>
+        <option value="5">5 gasten</option><option value="6">6 gasten</option>
+      </select>
+    </div>
+    <div class="booking-slot-label">Kies een tijdslot</div>
+    <div class="booking-slot-grid" id="bkSlotGrid">${bouwSlotGrid(vollSlots, gesloten)}</div>
+    <div class="booking-err" id="bkErr" style="display:none"></div>
+    <button class="booking-verstuur-btn" id="bkVerstuur">📅 Reservering bevestigen</button>
+  `;
+
+  formWrapper.appendChild(form);
+  content.appendChild(naam); content.appendChild(bubbel); content.appendChild(formWrapper);
+  w.appendChild(content);
+  chatvenster.appendChild(w);
+  chatvenster.scrollTop = chatvenster.scrollHeight;
+
+  document.getElementById("bkDatum").addEventListener("change", verversSlots);
+  document.getElementById("bkVerstuur").addEventListener("click", verstuurBooking);
+  document.getElementById("bkSlotGrid").querySelectorAll(".booking-slot:not(.booking-slot-vol)").forEach(el => el.addEventListener("click", () => kiesSlot(el, el.dataset.tijd)));
+}
+
+function kiesSlot(el, tijd) {
+  document.querySelectorAll(".booking-slot").forEach(s => s.classList.remove("booking-slot-gekozen"));
+  el.classList.add("booking-slot-gekozen");
+  gekozenSlot = tijd;
+}
+
+async function verstuurBooking() {
+  const naam   = document.getElementById("bkNaam").value.trim();
+  const email  = document.getElementById("bkEmail").value.trim();
+  const datum  = document.getElementById("bkDatum").value;
+  const gasten = parseInt(document.getElementById("bkGasten").value);
+  const tel    = document.getElementById("bkTel")?.value?.trim() || "";
+  const err    = document.getElementById("bkErr");
+  const btn    = document.getElementById("bkVerstuur");
+  err.style.display = "none";
+  if (!naam)               { err.textContent="Vul je naam in."; err.style.display="block"; return; }
+  if (!email||!email.includes("@")) { err.textContent="Vul een geldig e-mailadres in."; err.style.display="block"; return; }
+  if (isDinsdag(datum))    { err.textContent="Bagel Alley is op dinsdag gesloten."; err.style.display="block"; return; }
+  if (!gekozenSlot)        { err.textContent="Kies een tijdslot."; err.style.display="block"; return; }
+  btn.textContent = "Bezig..."; btn.disabled = true;
+  try {
+    const r = await fetch("/reserveren", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ naam, email, gasten, datum, tijd: gekozenSlot, telefoon: tel })
+    });
+    const data = await r.json();
+    const bevestigdSlot = gekozenSlot;
+    const voornaam = naam.split(" ")[0];
+    gekozenSlot = null;
+    document.querySelectorAll(".booking-chat-wrapper").forEach(e => e.remove());
+    voegJijToe(`Reservering: ${naam} — ${datum} om ${bevestigdSlot}`);
+    voegTypingToe();
+    if (data.succes) {
+      setTimeout(async () => {
+        await voegBotToe(`Top ${voornaam}! 🥯 Je tafel staat gereserveerd op ${datum} om ${bevestigdSlot}. We sturen een bevestigingsmail naar ${email} — check ook je spammap als je hem niet ziet. Tot dan!`);
+        zetSnelknoppen("einde");
+      }, 800);
+    } else {
+      setTimeout(async () => {
+        await voegBotToe(data.fout || "Er ging iets mis. Bel ons op 070-514 61 16.");
+        zetSnelknoppen("start");
+      }, 800);
+    }
+  } catch {
+    err.textContent = "Kan de server niet bereiken. Probeer opnieuw.";
+    err.style.display = "block";
+    btn.textContent = "📅 Reservering bevestigen";
+    btn.disabled = false;
+  }
+}
+
+// ── RATING ──
+function toonRating() {
+  const div = document.getElementById("chatvenster");
+  const w = document.createElement("div"); w.className = "bericht-wrapper-bot";
+  w.innerHTML = `<div class="msg-avatar">${AVATAR_INITIALEN}</div>`;
+  const content = document.createElement("div"); content.className = "bericht-content";
+  const naam = document.createElement("span"); naam.className = "naam"; naam.textContent = AVATAR_NAAM;
+  const bubbel = document.createElement("div"); bubbel.className = "bubble bubble-bot";
+  bubbel.textContent = "Hoe was je ervaring? We stellen je feedback op prijs!";
+  const ratingDiv = document.createElement("div");
+  ratingDiv.className = "rating-wrapper";
+  let sterScore = 0;
+  ratingDiv.innerHTML = `
+    <div class="rating-label">Klik op een ster</div>
+    <div class="ster-rij">${[1,2,3,4,5].map(i=>`<span class="ster" data-score="${i}">⭐</span>`).join("")}</div>
+    <button class="rating-bevestig" onclick="verstuurRating(${Date.now()})">Verstuur</button>
+  `;
+  ratingDiv.querySelectorAll(".ster").forEach(s => {
+    s.onclick = () => { sterScore=parseInt(s.dataset.score); ratingDiv.querySelectorAll(".ster").forEach((st,idx)=>st.classList.toggle("actief",idx<sterScore)); };
+  });
+  content.appendChild(naam); content.appendChild(bubbel); content.appendChild(ratingDiv);
+  w.appendChild(content); div.appendChild(w); div.scrollTop=div.scrollHeight;
+}
+function verstuurRating() {
+  document.querySelectorAll(".rating-wrapper").forEach(e=>e.remove());
+  voegJijToe("Beoordeling verstuurd ⭐");
+  voegTypingToe();
+  setTimeout(async()=>{ await voegBotToe("Dankjewel voor je beoordeling! 🙏 We hopen je snel weer te zien bij Bagel Alley."); }, 800);
+}
+
+
+// ── INIT ──
+window.addEventListener("load", () => {
+  checkOpenStatus();
+  zetSnelknoppen("start");
+
+  // Welkomstbericht na korte vertraging
+  setTimeout(async () => {
+    document.getElementById("minimizedBar").classList.add("zichtbaar");
+    document.getElementById("badge").classList.add("zichtbaar");
+
+    // Zet welkomstbericht klaar (zichtbaar wanneer chat opengaat)
+    await voegBotToe(`Hoi! 👋 Ik ben ${AVATAR_NAAM}, de assistent van ${BEDRIJF_NAAM}. Waarmee kan ik je helpen?`);
+  }, 800);
+});
+
+// Reveal on scroll
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add("visible"); });
+}, { threshold: .12, rootMargin: "0px 0px -40px 0px" });
+document.querySelectorAll(".reveal").forEach(el => observer.observe(el));
+</script>
+</body>
+</html>

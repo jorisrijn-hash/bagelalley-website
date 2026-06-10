@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Beheer — Bagel Alley</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --cream: #F5F0E8; --cream2: #EDE6D6;
+      --dark: #1A1018; --dark2: #241E2A;
+      --purple: #8758CE; --purple2: #9B6EE0; --purple3: #6E42B0;
+      --text: #1E1828; --muted: #6B5F7A; --white: #FDFAF5;
+      --green: #22c55e; --red: #ef4444;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--dark); color: var(--cream); min-height: 100vh; }
+
+    /* LOGIN SCREEN */
+    #loginScreen {
+      min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      background: var(--dark);
+      background-image: radial-gradient(ellipse at 30% 50%, rgba(135,88,206,.12) 0%, transparent 60%);
+    }
+    .login-card {
+      background: var(--dark2); border-radius: 16px; padding: 2.5rem 2.8rem;
+      width: 100%; max-width: 400px;
+      box-shadow: 0 8px 48px rgba(135,88,206,.15), 0 0 0 1px rgba(135,88,206,.12);
+    }
+    .login-brand { text-align: center; margin-bottom: 2rem; }
+    .login-brand-name { font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: 700; color: var(--cream); }
+    .login-brand-name span { color: var(--purple2); }
+    .login-brand-sub { font-size: .78rem; color: rgba(245,240,232,.4); letter-spacing: .08em; text-transform: uppercase; margin-top: .3rem; }
+    .login-title { font-size: 1.1rem; font-weight: 600; color: var(--cream); text-align: center; margin-bottom: 1.5rem; }
+    .login-group { display: flex; flex-direction: column; gap: .45rem; margin-bottom: 1rem; }
+    .login-label { font-size: .75rem; font-weight: 500; color: rgba(245,240,232,.5); letter-spacing: .08em; text-transform: uppercase; }
+    .login-input { padding: .8rem 1rem; font-size: .92rem; border: 1.5px solid rgba(135,88,206,.2); border-radius: 8px; font-family: 'DM Sans', sans-serif; color: var(--text); background: white; outline: none; width: 100%; transition: border-color .2s; }
+    .login-input:focus { border-color: var(--purple); }
+    .login-btn { background: var(--purple); color: white; border: none; padding: .9rem; font-size: .92rem; font-weight: 500; border-radius: 8px; cursor: pointer; width: 100%; font-family: 'DM Sans', sans-serif; transition: background .2s; margin-top: .5rem; }
+    .login-btn:hover { background: var(--purple3); }
+    .login-error { color: #fca5a5; font-size: .82rem; text-align: center; margin-top: .5rem; min-height: 1.2rem; }
+
+    /* ADMIN APP */
+    #adminApp { display: none; }
+
+    /* TOP NAV */
+    .admin-nav {
+      background: var(--dark2); border-bottom: 2px solid var(--purple);
+      padding: .9rem 2.5rem; display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 100;
+    }
+    .admin-nav-left { display: flex; align-items: center; gap: 1.2rem; }
+    .admin-logo { font-family: 'Playfair Display', serif; font-size: 1.2rem; font-weight: 700; color: var(--cream); }
+    .admin-logo span { color: var(--purple2); }
+    .admin-badge { background: rgba(135,88,206,.2); color: var(--purple2); font-size: .68rem; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; padding: .25rem .7rem; border-radius: 20px; border: 1px solid rgba(135,88,206,.3); }
+    .admin-nav-right { display: flex; align-items: center; gap: 1rem; }
+    .notif-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .4; } }
+    .admin-logout-btn { background: none; border: 1px solid rgba(245,240,232,.15); color: rgba(245,240,232,.5); padding: .4rem .9rem; border-radius: 6px; font-size: .78rem; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all .2s; }
+    .admin-logout-btn:hover { border-color: rgba(245,240,232,.35); color: var(--cream); }
+    .btn-website { font-size: .78rem; color: rgba(245,240,232,.4); text-decoration: none; transition: color .2s; }
+    .btn-website:hover { color: var(--purple2); }
+
+    /* MAIN */
+    .admin-main { max-width: 1200px; margin: 0 auto; padding: 2rem 2.5rem 4rem; }
+
+    /* DATE NAV */
+    .date-nav { display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem; }
+    .date-nav-btn { background: rgba(135,88,206,.15); color: var(--purple2); border: 1px solid rgba(135,88,206,.25); width: 38px; height: 38px; border-radius: 8px; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .2s; }
+    .date-nav-btn:hover { background: rgba(135,88,206,.3); }
+    .date-nav-label { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700; color: var(--cream); flex: 1; }
+    .date-nav-today { background: var(--purple); color: white; border: none; padding: .45rem 1.1rem; border-radius: 6px; font-size: .78rem; font-weight: 500; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background .2s; }
+    .date-nav-today:hover { background: var(--purple3); }
+    #datumInput { padding: .45rem .8rem; font-size: .85rem; border: 1.5px solid rgba(135,88,206,.25); border-radius: 8px; background: var(--dark2); color: var(--cream); font-family: 'DM Sans', sans-serif; outline: none; transition: border-color .2s; }
+    #datumInput:focus { border-color: var(--purple); }
+
+    /* STAT CARDS */
+    .stat-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 2rem; }
+    .stat-card { background: var(--dark2); border-radius: 10px; padding: 1.4rem 1.6rem; border: 1px solid rgba(135,88,206,.1); }
+    .stat-card-label { font-size: .7rem; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: rgba(245,240,232,.4); margin-bottom: .5rem; }
+    .stat-card-value { font-family: 'Playfair Display', serif; font-size: 2.2rem; font-weight: 700; color: var(--cream); line-height: 1; }
+    .stat-card-value.purple { color: var(--purple2); }
+    .stat-card-sub { font-size: .75rem; color: rgba(245,240,232,.35); margin-top: .35rem; }
+
+    /* BOEKINGEN TABLE */
+    .boekingen-card { background: var(--dark2); border-radius: 12px; overflow: hidden; border: 1px solid rgba(135,88,206,.1); }
+    .boekingen-header { padding: 1.2rem 1.6rem; border-bottom: 1px solid rgba(135,88,206,.1); display: flex; align-items: center; justify-content: space-between; }
+    .boekingen-header-title { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; color: var(--cream); }
+    .boekingen-count { font-size: .75rem; color: rgba(245,240,232,.4); }
+
+    table.bk-table { width: 100%; border-collapse: collapse; }
+    .bk-table th { padding: .7rem 1.6rem; font-size: .68rem; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: rgba(245,240,232,.35); text-align: left; border-bottom: 1px solid rgba(135,88,206,.08); }
+    .bk-table td { padding: 1rem 1.6rem; font-size: .88rem; color: rgba(245,240,232,.8); border-bottom: 1px solid rgba(135,88,206,.06); vertical-align: middle; }
+    .bk-table tr:last-child td { border-bottom: none; }
+    .bk-table tr:hover td { background: rgba(135,88,206,.05); }
+    .bk-table tr.geannuleerd td { opacity: .4; text-decoration: line-through; }
+
+    .tijd-badge { display: inline-flex; align-items: center; background: rgba(135,88,206,.15); color: var(--purple2); padding: .25rem .7rem; border-radius: 20px; font-size: .8rem; font-weight: 500; }
+    .gasten-badge { display: inline-flex; align-items: center; gap: .3rem; color: rgba(245,240,232,.6); font-size: .82rem; }
+
+    .btn-annuleer { background: none; border: 1px solid rgba(239,68,68,.3); color: rgba(239,68,68,.7); padding: .3rem .75rem; border-radius: 6px; font-size: .75rem; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all .2s; }
+    .btn-annuleer:hover { background: rgba(239,68,68,.1); border-color: rgba(239,68,68,.6); color: #f87171; }
+    .btn-verwijder { background: none; border: 1px solid rgba(245,240,232,.1); color: rgba(245,240,232,.35); padding: .3rem .75rem; border-radius: 6px; font-size: .75rem; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all .2s; margin-left: .4rem; }
+    .btn-verwijder:hover { background: rgba(245,240,232,.06); color: rgba(245,240,232,.6); }
+
+    .geen-boekingen { text-align: center; padding: 3rem; color: rgba(245,240,232,.3); font-size: .9rem; }
+
+    /* LIVE NOTIFICATIES */
+    #notifContainer { position: fixed; top: 70px; right: 20px; z-index: 200; display: flex; flex-direction: column; gap: 10px; }
+    .notif-toast { background: var(--dark2); color: var(--cream); padding: .9rem 1.2rem; border-radius: 10px; border-left: 3px solid var(--green); font-size: .85rem; max-width: 300px; line-height: 1.5; box-shadow: 0 4px 20px rgba(0,0,0,.4); animation: toastIn .3s ease; }
+    @keyframes toastIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+
+    /* WEEK OVERVIEW */
+    .week-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-bottom: 2rem; }
+    .week-day-card { background: var(--dark2); border-radius: 10px; padding: 1rem; border: 1px solid rgba(135,88,206,.1); cursor: pointer; transition: border-color .2s, transform .15s; }
+    .week-day-card:hover { border-color: var(--purple); transform: translateY(-2px); }
+    .week-day-card.active { border-color: var(--purple); background: rgba(135,88,206,.15); }
+    .week-day-card.closed { opacity: .4; cursor: default; }
+    .week-day-card.closed:hover { transform: none; border-color: rgba(135,88,206,.1); }
+    .week-day-label { font-size: .68rem; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; color: rgba(245,240,232,.4); margin-bottom: .3rem; }
+    .week-day-date { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: var(--cream); line-height: 1; }
+    .week-day-count { font-size: .78rem; color: var(--purple2); margin-top: .4rem; font-weight: 500; }
+    .week-day-count.gesloten { color: rgba(245,240,232,.25); }
+    .week-nav { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.2rem; }
+    .week-nav-label { font-size: 1rem; font-weight: 500; color: rgba(245,240,232,.6); flex: 1; }
+    .week-nav-btn { background: rgba(135,88,206,.15); color: var(--purple2); border: 1px solid rgba(135,88,206,.25); width: 34px; height: 34px; border-radius: 7px; font-size: .95rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .2s; }
+    .week-nav-btn:hover { background: rgba(135,88,206,.3); }
+
+    /* SOUND INDICATOR */
+    .sound-btn { background: rgba(135,88,206,.15); border: 1px solid rgba(135,88,206,.25); color: var(--purple2); padding: .4rem .9rem; border-radius: 6px; font-size: .78rem; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all .2s; }
+    .sound-btn:hover { background: rgba(135,88,206,.3); }
+    .sound-btn.muted { opacity: .5; }
+
+    /* NOTIFICATIE OVERZICHT */
+    .notif-panel {
+      background: var(--dark2); border-radius: 12px;
+      border: 1px solid rgba(135,88,206,.1);
+      margin-bottom: 2rem; overflow: hidden;
+    }
+    .notif-panel-header {
+      padding: 1rem 1.6rem; border-bottom: 1px solid rgba(135,88,206,.1);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .notif-panel-title {
+      font-family: 'Playfair Display', serif; font-size: 1rem;
+      font-weight: 700; color: var(--cream);
+      display: flex; align-items: center; gap: .6rem;
+    }
+    .notif-live-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--green); animation: pulse 2s infinite;
+    }
+    .notif-clear-btn {
+      background: none; border: 1px solid rgba(245,240,232,.1);
+      color: rgba(245,240,232,.35); padding: .3rem .8rem;
+      border-radius: 6px; font-size: .72rem; cursor: pointer;
+      font-family: 'DM Sans', sans-serif; transition: all .2s;
+    }
+    .notif-clear-btn:hover { border-color: rgba(245,240,232,.3); color: rgba(245,240,232,.6); }
+    .notif-panel-body { max-height: 260px; overflow-y: auto; }
+    .notif-panel-empty {
+      padding: 2rem; text-align: center;
+      font-size: .85rem; color: rgba(245,240,232,.25);
+    }
+    .notif-item {
+      display: flex; align-items: flex-start; gap: .8rem;
+      padding: .9rem 1.6rem; border-bottom: 1px solid rgba(135,88,206,.06);
+      transition: background .15s;
+    }
+    .notif-item:last-child { border-bottom: none; }
+    .notif-item:hover { background: rgba(135,88,206,.05); }
+    .notif-item.notif-new { background: rgba(135,88,206,.07); }
+    .notif-item-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--green); flex-shrink: 0; margin-top: .35rem;
+    }
+    .notif-item-dot.read { background: rgba(245,240,232,.15); }
+    .notif-item-body { flex: 1; }
+    .notif-item-title { font-size: .85rem; font-weight: 500; color: var(--cream); margin-bottom: .2rem; }
+    .notif-item-sub { font-size: .75rem; color: rgba(245,240,232,.4); }
+    .notif-item-time { font-size: .72rem; color: rgba(245,240,232,.3); flex-shrink: 0; white-space: nowrap; margin-top: .1rem; }
+
+    /* LOADING */
+    .loading { text-align: center; padding: 2rem; color: rgba(245,240,232,.35); font-size: .9rem; }
+
+    @media (max-width: 768px) {
+      .admin-nav { padding: .8rem 1.2rem; }
+      .admin-main { padding: 1.5rem 1.2rem 3rem; }
+      .stat-row { grid-template-columns: 1fr 1fr; }
+      .date-nav-label { font-size: 1.1rem; }
+      .bk-table th:nth-child(4), .bk-table td:nth-child(4) { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div id="loginScreen">
+  <div class="login-card">
+    <div class="login-brand">
+      <div class="login-brand-name">Bagel <span>Alley</span></div>
+      <div class="login-brand-sub">Beheerpaneel</div>
+    </div>
+    <div class="login-title">Inloggen</div>
+    <div class="login-group">
+      <label class="login-label">Gebruikersnaam</label>
+      <input type="text" id="loginUser" class="login-input" placeholder="gebruikersnaam" onkeydown="if(event.key==='Enter')login()">
+    </div>
+    <div class="login-group">
+      <label class="login-label">Wachtwoord</label>
+      <input type="password" id="loginPass" class="login-input" placeholder="••••••••" onkeydown="if(event.key==='Enter')login()">
+    </div>
+    <button class="login-btn" onclick="login()">Inloggen</button>
+    <div class="login-error" id="loginError"></div>
+  </div>
+</div>
+
+<!-- ADMIN APP -->
+<div id="adminApp">
+  <!-- NAV -->
+  <nav class="admin-nav">
+    <div class="admin-nav-left">
+      <div class="admin-logo">Bagel <span>Alley</span></div>
+      <span class="admin-badge">Beheer</span>
+    </div>
+    <div class="admin-nav-right">
+      <div class="notif-dot" title="Live notificaties actief"></div>
+      <button class="sound-btn" id="soundToggle" onclick="toggleSound()" title="Geluid aan/uit">🔔 Geluid aan</button>
+      <a href="/" class="btn-website">← Website</a>
+      <button class="admin-logout-btn" onclick="logout()">Uitloggen</button>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <div class="admin-main">
+
+    <!-- NOTIFICATIE OVERZICHT -->
+    <div class="notif-panel" id="notifPanel">
+      <div class="notif-panel-header">
+        <div class="notif-panel-title">
+          <div class="notif-live-dot"></div>
+          Live notificaties
+        </div>
+        <button class="notif-clear-btn" onclick="clearNotifs()">Wis alles</button>
+      </div>
+      <div class="notif-panel-body" id="notifPanelBody">
+        <div class="notif-panel-empty" id="notifEmpty">Nog geen notificaties ontvangen</div>
+      </div>
+    </div>
+
+    <!-- WEEK OVERVIEW -->
+    <div class="week-nav">
+      <button class="week-nav-btn" onclick="veranderWeek(-7)">‹</button>
+      <div class="week-nav-label" id="weekLabel">Week overzicht</div>
+      <button class="week-nav-btn" onclick="veranderWeek(7)">›</button>
+      <button class="date-nav-today" onclick="weekNaarVandaag()" style="margin-left:0">Deze week</button>
+    </div>
+    <div class="week-grid" id="weekGrid">
+      <!-- wordt dynamisch gevuld -->
+    </div>
+
+    <!-- DATE NAV -->
+    <div class="date-nav">
+      <button class="date-nav-btn" onclick="veranderDag(-1)">‹</button>
+      <div class="date-nav-label" id="datumLabel">Laden...</div>
+      <button class="date-nav-btn" onclick="veranderDag(1)">›</button>
+      <button class="date-nav-today" onclick="naarVandaag()">Vandaag</button>
+      <input type="date" id="datumInput" onchange="kiesDatum(this.value)">
+    </div>
+
+    <!-- STATS -->
+    <div class="stat-row">
+      <div class="stat-card">
+        <div class="stat-card-label">Reserveringen</div>
+        <div class="stat-card-value purple" id="statTotaal">—</div>
+        <div class="stat-card-sub" id="statDatum">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-label">Gasten verwacht</div>
+        <div class="stat-card-value" id="statGasten">—</div>
+        <div class="stat-card-sub">personen</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-label">Vrije slots</div>
+        <div class="stat-card-value" id="statVrij">—</div>
+        <div class="stat-card-sub">van de 16 slots</div>
+      </div>
+    </div>
+
+    <!-- BOEKINGEN TABLE -->
+    <div class="boekingen-card">
+      <div class="boekingen-header">
+        <div class="boekingen-header-title">Reserveringen</div>
+        <div class="boekingen-count" id="boekingenCount">Laden...</div>
+      </div>
+      <div id="boekingenContent">
+        <div class="loading">Laden...</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- NOTIFICATIES -->
+<div id="notifContainer"></div>
+
+<script>
+let huidigeDatum = vandaagIso();
+let weekStartDatum = maandag(vandaagIso());
+let soundEnabled = true;
+
+// ── GELUID ──
+function speelNotificatieGeluid() {
+  if (!soundEnabled) return;
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    // Vriendelijk "ding" geluid — twee tonen
+    function toon(freq, start, dur, vol) {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, ctx.currentTime + start);
+      gain.gain.setValueAtTime(0, ctx.currentTime + start);
+      gain.gain.linearRampToValueAtTime(vol, ctx.currentTime + start + 0.01);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + start + dur);
+      osc.start(ctx.currentTime + start);
+      osc.stop(ctx.currentTime + start + dur);
+    }
+    toon(880, 0,    0.18, 0.35);
+    toon(1100, 0.15, 0.22, 0.25);
+  } catch {}
+}
+
+function toggleSound() {
+  soundEnabled = !soundEnabled;
+  const btn = document.getElementById("soundToggle");
+  btn.textContent = soundEnabled ? "🔔 Geluid aan" : "🔕 Geluid uit";
+  btn.classList.toggle("muted", !soundEnabled);
+}
+
+// ── WEEK HELPERS ──
+function maandag(iso) {
+  const d = new Date(iso + "T12:00:00");
+  const dag = d.getDay(); // 0=zon
+  const diff = dag === 0 ? -6 : 1 - dag;
+  d.setDate(d.getDate() + diff);
+  return d.toISOString().split("T")[0];
+}
+
+function veranderWeek(delta) {
+  const d = new Date(weekStartDatum + "T12:00:00");
+  d.setDate(d.getDate() + delta);
+  weekStartDatum = d.toISOString().split("T")[0];
+  laadWeek();
+}
+
+function weekNaarVandaag() {
+  weekStartDatum = maandag(vandaagIso());
+  laadWeek();
+}
+
+async function laadWeek() {
+  const d = new Date(weekStartDatum + "T12:00:00");
+  const eind = new Date(d); eind.setDate(eind.getDate() + 6);
+  const maanden = ["jan","feb","mrt","apr","mei","jun","jul","aug","sep","okt","nov","dec"];
+  document.getElementById("weekLabel").textContent =
+    `${d.getDate()} ${maanden[d.getMonth()]} – ${eind.getDate()} ${maanden[eind.getMonth()]} ${eind.getFullYear()}`;
+
+  const grid = document.getElementById("weekGrid");
+  grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:.5rem;font-size:.82rem;color:rgba(245,240,232,.35)">Laden...</div>`;
+
+  try {
+    const r = await fetch(`/admin/week?start=${weekStartDatum}`);
+    if (r.status === 401) return;
+    const data = await r.json();
+    const week = data.week || {};
+    const dagenNamen = ["Ma","Di","Wo","Do","Vr","Za","Zo"];
+
+    grid.innerHTML = "";
+    for (let i = 0; i < 7; i++) {
+      const dag = new Date(weekStartDatum + "T12:00:00");
+      dag.setDate(dag.getDate() + i);
+      const iso = dag.toISOString().split("T")[0];
+      const isTuesday = dag.getDay() === 2;
+      const boekingen = week[iso] || [];
+      const actieve = boekingen.filter(b => !b.geannuleerd);
+      const isVandaag = iso === vandaagIso();
+      const isActief = iso === huidigeDatum;
+
+      const card = document.createElement("div");
+      card.className = "week-day-card" +
+        (isTuesday ? " closed" : "") +
+        (isActief ? " active" : "");
+      card.innerHTML = `
+        <div class="week-day-label">${dagenNamen[i]}${isVandaag ? " (vandaag)" : ""}</div>
+        <div class="week-day-date">${dag.getDate()}</div>
+        <div class="week-day-count ${isTuesday ? "gesloten" : ""}">${isTuesday ? "Gesloten" : actieve.length === 0 ? "Geen" : actieve.length + " res."}</div>
+      `;
+      if (!isTuesday) {
+        card.onclick = () => {
+          huidigeDatum = iso;
+          laadBoekingen(iso);
+          document.querySelectorAll(".week-day-card").forEach(c => c.classList.remove("active"));
+          card.classList.add("active");
+        };
+      }
+      grid.appendChild(card);
+    }
+  } catch {
+    grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:.5rem;font-size:.82rem;color:rgba(245,240,232,.35)">Fout bij laden.</div>`;
+  }
+}
+
+function vandaagIso() {
+  const n=new Date();
+  return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-${String(n.getDate()).padStart(2,'0')}`;
+}
+
+function datumNl(iso) {
+  const d=new Date(iso+"T12:00:00");
+  const dagen=["zondag","maandag","dinsdag","woensdag","donderdag","vrijdag","zaterdag"];
+  const maanden=["januari","februari","maart","april","mei","juni","juli","augustus","september","oktober","november","december"];
+  return `${dagen[d.getDay()]} ${d.getDate()} ${maanden[d.getMonth()]} ${d.getFullYear()}`;
+}
+
+// ── LOGIN ──
+async function login() {
+  const user = document.getElementById("loginUser").value.trim();
+  const pass = document.getElementById("loginPass").value.trim();
+  const err  = document.getElementById("loginError");
+  err.textContent = "";
+  try {
+    const r = await fetch("/admin/login", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({gebruiker:user,wachtwoord:pass}) });
+    const d = await r.json();
+    if (d.succes) {
+      document.getElementById("loginScreen").style.display = "none";
+      document.getElementById("adminApp").style.display = "block";
+      laadWeek();
+      laadBoekingen(huidigeDatum);
+      initSSE();
+    } else {
+      err.textContent = "Onjuiste inloggegevens.";
+    }
+  } catch { err.textContent = "Verbindingsfout. Probeer opnieuw."; }
+}
+
+async function logout() {
+  await fetch("/admin/logout", { method:"POST" });
+  document.getElementById("adminApp").style.display = "none";
+  document.getElementById("loginScreen").style.display = "flex";
+  document.getElementById("loginPass").value = "";
+}
+
+// ── DATUM NAVIGATIE ──
+function veranderDag(delta) {
+  const d = new Date(huidigeDatum+"T12:00:00");
+  d.setDate(d.getDate()+delta);
+  huidigeDatum = d.toISOString().split("T")[0];
+  laadBoekingen(huidigeDatum);
+}
+function naarVandaag() { huidigeDatum = vandaagIso(); laadBoekingen(huidigeDatum); }
+function kiesDatum(val) { if(val) { huidigeDatum=val; laadBoekingen(huidigeDatum); } }
+
+// ── LAAD BOEKINGEN ──
+async function laadBoekingen(datum) {
+  document.getElementById("datumLabel").textContent = datumNl(datum);
+  document.getElementById("datumInput").value = datum;
+  document.getElementById("boekingenContent").innerHTML = `<div class="loading">Laden...</div>`;
+  try {
+    const r = await fetch(`/admin/boekingen?datum=${datum}`);
+    const d = await r.json();
+    if (r.status === 401) { return; }
+    const stats = d.stats || {};
+    document.getElementById("statTotaal").textContent  = stats.totaal ?? "—";
+    document.getElementById("statGasten").textContent  = stats.gasten ?? "—";
+    document.getElementById("statVrij").textContent    = stats.vrij   ?? "—";
+    document.getElementById("statDatum").textContent   = datumNl(datum);
+
+    const boekingen = d.boekingen || [];
+    document.getElementById("boekingenCount").textContent = boekingen.length > 0 ? `${boekingen.length} ${boekingen.length===1?"reservering":"reserveringen"}` : "Geen reserveringen";
+
+    if (boekingen.length === 0) {
+      document.getElementById("boekingenContent").innerHTML = `<div class="geen-boekingen">Geen reserveringen op ${datumNl(datum)}</div>`;
+      return;
+    }
+
+    const html = `
+      <table class="bk-table">
+        <thead><tr>
+          <th>Tijd</th><th>Naam</th><th>Gasten</th><th>E-mail</th><th>Acties</th>
+        </tr></thead>
+        <tbody>
+          ${boekingen.map(b => `
+            <tr class="${b.geannuleerd?'geannuleerd':''}">
+              <td><span class="tijd-badge">${b.tijd}</span></td>
+              <td><strong style="color:var(--cream)">${b.naam}</strong>${b.telefoon?`<br><span style="font-size:.78rem;color:rgba(245,240,232,.4)">${b.telefoon}</span>`:""}</td>
+              <td><span class="gasten-badge">👥 ${b.gasten}</span></td>
+              <td style="font-size:.82rem;color:rgba(245,240,232,.5)">${b.email}</td>
+              <td>
+                ${!b.geannuleerd ? `<button class="btn-annuleer" onclick="annuleer(${b.id})">Annuleer</button>` : `<span style="font-size:.75rem;color:rgba(239,68,68,.5)">Geannuleerd</span>`}
+                <button class="btn-verwijder" onclick="verwijder(${b.id})">✕</button>
+              </td>
+            </tr>
+          `).join("")}
+        </tbody>
+      </table>
+    `;
+    document.getElementById("boekingenContent").innerHTML = html;
+  } catch(e) {
+    document.getElementById("boekingenContent").innerHTML = `<div class="geen-boekingen">Fout bij het laden. Probeer opnieuw.</div>`;
+  }
+}
+
+// ── ACTIES ──
+async function annuleer(id) {
+  if (!confirm("Reservering annuleren?")) return;
+  await fetch(`/admin/annuleer/${id}`, { method:"POST" });
+  laadBoekingen(huidigeDatum);
+}
+async function verwijder(id) {
+  if (!confirm("Reservering permanent verwijderen?")) return;
+  await fetch(`/admin/verwijder/${id}`, { method:"POST" });
+  laadBoekingen(huidigeDatum);
+}
+
+// ── SSE LIVE NOTIFICATIES ──
+let _geziendeNotifIds = new Set();
+let _notifLijst = [];
+
+function initSSE() {
+  try {
+    const es = new EventSource("/admin/events");
+    es.onmessage = function(e) {
+      try {
+        if (e.data === "connected" || e.data.startsWith(": ping")) return;
+        const d = JSON.parse(e.data);
+        if (!d || d.type === "ping") return;
+
+        // Deduplicatie: maak een unieke ID op basis van naam+datum+tijd
+        const notifId = `${d.naam||""}-${d.datum||""}-${d.tijd||""}`;
+        if (_geziendeNotifIds.has(notifId)) return;
+        _geziendeNotifIds.add(notifId);
+
+        speelNotificatieGeluid();
+        const msg = `🥯 Nieuwe reservering: ${d.naam||""} · ${d.datum||""} om ${d.tijd||""} · ${d.gasten||""}p`;
+        showToast(msg);
+        voegNotifToe(d, notifId);
+        if (d.datum === huidigeDatum) laadBoekingen(huidigeDatum);
+        laadWeek();
+      } catch {}
+    };
+  } catch {}
+}
+
+function voegNotifToe(d, notifId) {
+  const now = new Date();
+  const tijdStr = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  _notifLijst.unshift({ d, notifId, tijdStr, nieuw: true });
+
+  const body = document.getElementById("notifPanelBody");
+  const empty = document.getElementById("notifEmpty");
+  if (empty) empty.remove();
+
+  const item = document.createElement("div");
+  item.className = "notif-item notif-new";
+  item.dataset.id = notifId;
+  item.innerHTML = `
+    <div class="notif-item-dot"></div>
+    <div class="notif-item-body">
+      <div class="notif-item-title">🥯 ${d.naam||"Onbekend"} — ${d.gasten||"?"}p</div>
+      <div class="notif-item-sub">${d.datum||""} om ${d.tijd||""}</div>
+    </div>
+    <div class="notif-item-time">${tijdStr}</div>
+  `;
+  body.insertBefore(item, body.firstChild);
+
+  // Na 5 sec: markeer als gelezen
+  setTimeout(() => {
+    item.classList.remove("notif-new");
+    item.querySelector(".notif-item-dot").classList.add("read");
+  }, 5000);
+}
+
+function clearNotifs() {
+  _geziendeNotifIds.clear();
+  _notifLijst = [];
+  const body = document.getElementById("notifPanelBody");
+  body.innerHTML = `<div class="notif-panel-empty" id="notifEmpty">Nog geen notificaties ontvangen</div>`;
+}
+
+function showToast(msg) {
+  const c = document.getElementById("notifContainer");
+  const t = document.createElement("div"); t.className="notif-toast"; t.textContent=msg;
+  c.appendChild(t);
+  setTimeout(()=>{ t.style.opacity="0"; t.style.transition="opacity .4s"; setTimeout(()=>t.remove(),400); }, 6000);
+}
+
+// Enter to login
+document.addEventListener("keydown", e => {
+  if (e.key==="Enter" && document.getElementById("loginScreen").style.display!=="none") login();
+});
+</script>
+</body>
+</html>

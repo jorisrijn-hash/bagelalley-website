@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Menukaart — Bagel Alley Wassenaar</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --cream: #F5F0E8; --cream2: #EDE6D6;
+      --dark: #1A1018; --dark2: #241E2A;
+      --purple: #8758CE; --purple2: #9B6EE0; --purple3: #6E42B0;
+      --text: #1E1828; --muted: #6B5F7A; --white: #FDFAF5;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--dark); color: var(--cream); min-height: 100vh; }
+
+    /* NAV */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 1rem 3rem;
+      background: var(--dark2);
+      border-bottom: 2px solid var(--purple);
+    }
+    .nav-logo { display: flex; align-items: center; gap: .75rem; text-decoration: none; }
+    .nav-logo img { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; }
+    .nav-logo-text { font-family: 'Playfair Display', serif; font-size: 1.2rem; font-weight: 700; color: var(--cream); }
+    .nav-logo-text span { color: var(--purple2); }
+    .nav-back {
+      display: inline-flex; align-items: center; gap: .5rem;
+      font-size: .82rem; font-weight: 500; color: rgba(245,240,232,.55);
+      text-decoration: none; letter-spacing: .06em;
+      transition: color .2s;
+    }
+    .nav-back:hover { color: var(--purple2); }
+    .nav-cta {
+      background: var(--purple); color: white;
+      padding: .5rem 1.4rem; border-radius: 3px;
+      font-size: .8rem; font-weight: 500; letter-spacing: .06em;
+      text-decoration: none; transition: background .2s;
+    }
+    .nav-cta:hover { background: var(--purple3); }
+
+    /* HERO */
+    .page-hero {
+      background: linear-gradient(135deg, var(--dark2) 0%, rgba(135,88,206,.08) 100%);
+      padding: 3.5rem 3rem 2.5rem;
+      border-bottom: 1px solid rgba(135,88,206,.12);
+    }
+    .page-hero-inner { max-width: 860px; }
+    .page-label {
+      font-size: .72rem; font-weight: 500; letter-spacing: .18em;
+      text-transform: uppercase; color: var(--purple2);
+      display: block; margin-bottom: .7rem;
+    }
+    .page-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      font-weight: 700; line-height: 1.1; color: var(--cream);
+      margin-bottom: 1rem;
+    }
+    .page-title em { font-style: italic; color: var(--purple2); }
+    .page-desc {
+      font-size: .95rem; color: rgba(245,240,232,.6);
+      line-height: 1.7; max-width: 520px;
+    }
+    .page-badges {
+      display: flex; gap: .7rem; flex-wrap: wrap; margin-top: 1.5rem;
+    }
+    .page-badge {
+      background: rgba(135,88,206,.15); border: 1px solid rgba(135,88,206,.3);
+      color: var(--purple2); font-size: .73rem; font-weight: 500;
+      letter-spacing: .1em; text-transform: uppercase;
+      padding: .35rem .9rem; border-radius: 20px;
+    }
+
+    /* MAIN CONTENT */
+    .menu-main { max-width: 1100px; margin: 0 auto; padding: 2.5rem 3rem 5rem; }
+
+    .menu-intro {
+      background: var(--dark2); border-radius: 12px;
+      padding: 1.4rem 1.8rem; margin-bottom: 2.5rem;
+      border: 1px solid rgba(135,88,206,.12);
+      display: flex; align-items: center; gap: 1rem;
+    }
+    .menu-intro-icon {
+      width: 42px; height: 42px; flex-shrink: 0;
+      background: rgba(135,88,206,.15); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem;
+    }
+    .menu-intro-text { font-size: .88rem; color: rgba(245,240,232,.6); line-height: 1.6; }
+    .menu-intro-text strong { color: var(--purple2); font-weight: 500; }
+
+    /* MENU IMAGES */
+    .menu-section-label {
+      font-size: .7rem; font-weight: 500; letter-spacing: .16em;
+      text-transform: uppercase; color: var(--purple2);
+      margin-bottom: 1rem; display: block;
+    }
+    .menu-section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem; font-weight: 700; color: var(--cream);
+      margin-bottom: 1.5rem;
+    }
+
+    .menu-img-wrapper {
+      margin-bottom: 3rem;
+    }
+    .menu-img-header {
+      margin-bottom: 1rem;
+    }
+    .menu-img-card {
+      border-radius: 10px; overflow: hidden;
+      border: 1px solid rgba(135,88,206,.15);
+      box-shadow: 0 8px 40px rgba(0,0,0,.5);
+      background: var(--dark2);
+    }
+    .menu-img-card img {
+      width: 100%; height: auto; display: block;
+    }
+    .menu-img-caption {
+      padding: 1rem 1.4rem;
+      background: var(--dark2);
+      border-top: 1px solid rgba(135,88,206,.1);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .menu-img-caption-text {
+      font-size: .8rem; color: rgba(245,240,232,.4);
+      letter-spacing: .06em;
+    }
+    .menu-img-caption-badge {
+      font-size: .7rem; font-weight: 500; letter-spacing: .1em;
+      text-transform: uppercase; color: var(--purple2);
+      background: rgba(135,88,206,.12); border: 1px solid rgba(135,88,206,.25);
+      padding: .25rem .7rem; border-radius: 20px;
+    }
+
+    /* DIVIDER */
+    .menu-divider {
+      display: flex; align-items: center; gap: 1.5rem;
+      margin: 2rem 0 3rem;
+    }
+    .menu-divider::before, .menu-divider::after {
+      content: ''; flex: 1; height: 1px;
+      background: rgba(135,88,206,.15);
+    }
+    .menu-divider-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--purple); opacity: .6;
+    }
+
+    /* CTA */
+    .menu-cta-bar {
+      background: var(--dark2); border-radius: 12px;
+      padding: 2rem 2.4rem;
+      border: 1px solid rgba(135,88,206,.15);
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 2rem; flex-wrap: wrap;
+      margin-top: 2rem;
+    }
+    .menu-cta-text .cta-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem; font-weight: 700; color: var(--cream);
+      margin-bottom: .3rem;
+    }
+    .menu-cta-text .cta-sub {
+      font-size: .85rem; color: rgba(245,240,232,.5);
+    }
+    .menu-cta-btns { display: flex; gap: .9rem; flex-wrap: wrap; }
+    .btn-purple {
+      background: var(--purple); color: white;
+      padding: .8rem 1.8rem; font-size: .82rem; font-weight: 500;
+      letter-spacing: .07em; text-transform: uppercase;
+      border: none; cursor: pointer; text-decoration: none;
+      display: inline-block; border-radius: 3px; transition: background .2s;
+    }
+    .btn-purple:hover { background: var(--purple3); }
+    .btn-ghost {
+      background: transparent; color: rgba(245,240,232,.7);
+      padding: .8rem 1.8rem; font-size: .82rem; font-weight: 500;
+      letter-spacing: .07em; text-transform: uppercase;
+      border: 1.5px solid rgba(245,240,232,.2); cursor: pointer;
+      text-decoration: none; display: inline-block; border-radius: 3px;
+      transition: all .2s;
+    }
+    .btn-ghost:hover { border-color: rgba(245,240,232,.4); color: var(--cream); }
+
+    .menu-img-fallback {
+      display: none; align-items: center; justify-content: center;
+      flex-direction: column; gap: 1rem;
+      padding: 3rem 2rem; background: rgba(135,88,206,.06);
+      border-radius: 8px; text-align: center;
+    }
+    .menu-img-fallback-icon { font-size: 2.5rem; }
+    .menu-img-fallback-text { font-size: .9rem; color: rgba(245,240,232,.5); line-height: 1.6; }
+    .menu-img-fallback-code { font-family: monospace; background: rgba(135,88,206,.15); color: var(--purple2); padding: .3rem .7rem; border-radius: 4px; font-size: .82rem; }
+
+      nav { padding: .9rem 1.2rem; }
+      .page-hero { padding: 2.5rem 1.2rem 2rem; }
+      .menu-main { padding: 2rem 1.2rem 4rem; }
+      .menu-cta-bar { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="nav-logo">
+    <img src="{{ url_for('static', filename='logo.png') }}" alt="Bagel Alley logo">
+    <span class="nav-logo-text">Bagel <span>Alley</span></span>
+  </a>
+  <a href="/" class="nav-back">← Terug naar de website</a>
+  <a href="/reserveren" class="nav-cta">Tafel reserveren</a>
+</nav>
+
+<div class="page-hero">
+  <div class="page-hero-inner">
+    <span class="page-label">Onze kaart</span>
+    <h1 class="page-title">De volledige<br><em>menukaart</em></h1>
+    <p class="page-desc">Van verse ontbijtbagels tot uitgebreide High Tea — alles vers bereid in onze eigen keuken. Elke dag wisselend aanbod.</p>
+    <div class="page-badges">
+      <span class="page-badge">🥯 Verse bagels</span>
+      <span class="page-badge">🍵 High Tea</span>
+      <span class="page-badge">🫒 Tapas</span>
+      <span class="page-badge">☕ Specialty koffie</span>
+      <span class="page-badge">🥤 Smoothies & Juices</span>
+    </div>
+  </div>
+</div>
+
+<div class="menu-main">
+
+  <div class="menu-intro">
+    <div class="menu-intro-icon">ℹ️</div>
+    <p class="menu-intro-text">
+      Prijzen en aanbod kunnen seizoensgebonden afwijken.
+      <strong>Keuken sluit om 15:30.</strong>
+      Vragen over allergenen? Bel <strong>070-514 61 16</strong> of mail <strong>info@bagelalley.nl</strong>
+    </p>
+  </div>
+
+  <!-- MENUKAART 1 -->
+  <div class="menu-img-wrapper">
+    <div class="menu-img-header">
+      <span class="menu-section-label">Pagina 1 van 2</span>
+      <h2 class="menu-section-title">Soepen, Salades, Drankjes & Zoet</h2>
+    </div>
+    <div class="menu-img-card">
+      <img src="{{ url_for('static', filename='menu/menu_1.webp') }}" alt="Menukaart Bagel Alley — pagina 1" loading="eager" onerror="this.closest('.menu-img-card').querySelector('.menu-img-fallback').style.display='flex';this.style.display='none'">
+      <div class="menu-img-fallback">
+        <div class="menu-img-fallback-icon">📁</div>
+        <div class="menu-img-fallback-text">
+          Zet <span class="menu-img-fallback-code">menu_1.webp</span> in de map<br>
+          <span class="menu-img-fallback-code">static/menu/</span>
+        </div>
+      </div>
+      <div class="menu-img-caption">
+        <span class="menu-img-caption-text">Soups & Salads · Sweets & Goodies · Coffee · Drinks · High Tea · Tapas</span>
+        <span class="menu-img-caption-badge">Pagina 1</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="menu-divider">
+    <div class="menu-divider-dot"></div>
+    <div class="menu-divider-dot"></div>
+    <div class="menu-divider-dot"></div>
+  </div>
+
+  <!-- MENUKAART 2 -->
+  <div class="menu-img-wrapper">
+    <div class="menu-img-header">
+      <span class="menu-section-label">Pagina 2 van 2</span>
+      <h2 class="menu-section-title">Bagels, Ontbijt, Bowls & Boxes</h2>
+    </div>
+    <div class="menu-img-card">
+      <img src="{{ url_for('static', filename='menu/menu_2.webp') }}" alt="Menukaart Bagel Alley — pagina 2" loading="lazy" onerror="this.closest('.menu-img-card').querySelector('.menu-img-fallback').style.display='flex';this.style.display='none'">
+      <div class="menu-img-fallback">
+        <div class="menu-img-fallback-icon">📁</div>
+        <div class="menu-img-fallback-text">
+          Zet <span class="menu-img-fallback-code">menu_2.webp</span> in de map<br>
+          <span class="menu-img-fallback-code">static/menu/</span>
+        </div>
+      </div>
+      <div class="menu-img-caption">
+        <span class="menu-img-caption-text">Bagels · Ontbijt · Fresh Juices · Smoothies · Yoghurt · Bowls · Take Away Boxes</span>
+        <span class="menu-img-caption-badge">Pagina 2</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="menu-cta-bar">
+    <div class="menu-cta-text">
+      <div class="cta-title">Klaar om te genieten?</div>
+      <div class="cta-sub">Reserveer een tafel of bestel online via onze webshop.</div>
+    </div>
+    <div class="menu-cta-btns">
+      <a href="/reserveren" class="btn-purple">📅 Tafel reserveren</a>
+      <a href="/shop" class="btn-ghost">🛍️ Online bestellen</a>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>
