@@ -361,16 +361,19 @@
     @media (max-width: 768px) {
       nav { padding: .9rem 1.5rem; }
       .nav-links { display: none; }
-      .mobile-menu-btn { display: flex; z-index: 1000; position: relative; }
-      .nav-links.open {
-        display: flex !important; flex-direction: column; align-items: flex-start;
+      .mobile-menu-btn { display: flex; cursor: pointer; z-index: 1000; position: relative; }
+      #nav-toggle:checked ~ nav .nav-links {
+        display: flex; flex-direction: column; align-items: flex-start;
         position: fixed; top: 0; left: 0; right: 0; bottom: 0;
         background: var(--dark2); padding: 7rem 2rem 2rem;
         gap: 2rem; z-index: 999;
       }
-      .nav-links.open a { font-size: 1.2rem; color: var(--cream); }
-      .nav-links.open a.nav-jobs { color: var(--muted); font-size: 1rem; }
-      .nav-links.open .nav-cta { font-size: 1rem; padding: .8rem 1.8rem; }
+      #nav-toggle:checked ~ nav .nav-links a { font-size: 1.2rem; color: var(--cream); }
+      #nav-toggle:checked ~ nav .nav-links a.nav-jobs { color: var(--muted); font-size: 1rem; }
+      #nav-toggle:checked ~ nav .nav-links .nav-cta { font-size: 1rem; padding: .8rem 1.8rem; }
+      #nav-toggle:checked ~ nav .mobile-menu-btn span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+      #nav-toggle:checked ~ nav .mobile-menu-btn span:nth-child(2) { opacity: 0; }
+      #nav-toggle:checked ~ nav .mobile-menu-btn span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
       
       .hero-content { padding: 0 1.5rem 3rem; }
       .hero-stats { display: none; }
@@ -396,12 +399,13 @@
 <body>
 
 <!-- NAV -->
+<input type="checkbox" id="nav-toggle" style="display:none">
 <nav>
   <a href="#" class="nav-logo">
     <img src="{{ url_for('static', filename='logo.png') }}" alt="Bagel Alley" onerror="this.style.display='none'">
     <span class="nav-logo-text">Bagel <span>Alley</span></span>
   </a>
-  <ul class="nav-links" onclick="if(event.target.tagName==='A'){this.classList.remove('open');document.querySelector('.mobile-menu-btn').classList.remove('open');document.body.style.overflow=''}">
+  <ul class="nav-links">
     <li><a href="#menu">Menu</a></li>
     <li><a href="#sfeer">Over Ons</a></li>
     <li><a href="#tijden">Openingstijden</a></li>
@@ -409,7 +413,9 @@
     <li><a href="/jobs" class="nav-jobs">Jobs</a></li>
     <li><a href="/reserveren" class="nav-cta">Reserveren</a></li>
   </ul>
-  <button class="mobile-menu-btn" aria-label="Menu" onclick="var n=document.querySelector('.nav-links');var o=n.classList.toggle('open');this.classList.toggle('open',o);document.body.style.overflow=o?'hidden':'';"><span></span><span></span><span></span></button>
+  <label for="nav-toggle" class="mobile-menu-btn" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </label>
 </nav>
 
 
