@@ -49,7 +49,7 @@
 
 
     /* NAV */
-    nav { position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; padding: 1rem 4rem; background: rgba(245,240,232,.97); backdrop-filter: blur(14px); border-bottom: 1px solid rgba(135,88,206,.12); }
+    nav { position: sticky; top: 0; z-index: 1000; display: flex; justify-content: space-between; align-items: center; padding: 1rem 4rem; background: rgba(245,240,232,.97); backdrop-filter: blur(14px); border-bottom: 1px solid rgba(135,88,206,.12); }
     .nav-logo { display: flex; align-items: center; gap: .75rem; text-decoration: none; }
     .nav-logo img { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; }
     .nav-logo-text { font-family: 'Playfair Display', serif; font-size: 1.25rem; font-weight: 700; color: var(--text); line-height: 1; }
@@ -366,12 +366,12 @@
         position: fixed; top: 0; left: 0; right: 0; bottom: 0;
         background: var(--dark2);
         padding: 5rem 2rem 2rem;
-        gap: 1.8rem; z-index: 100;
+        gap: 1.8rem; z-index: 999;
       }
       .nav-links.open a { font-size: 1.2rem; color: var(--cream); letter-spacing: .05em; }
       .nav-links.open a.nav-jobs { color: var(--muted); font-size: 1rem; }
       .nav-links.open .nav-cta { font-size: 1rem; padding: .8rem 1.8rem; }
-      .mobile-menu-btn { display: flex; }
+      .mobile-menu-btn { display: flex; z-index: 1000; position: relative; }
       .hero-content { padding: 0 1.5rem 3rem; }
       .hero-stats { display: none; }
       .shortcuts { grid-template-columns: 1fr; height: auto; }
