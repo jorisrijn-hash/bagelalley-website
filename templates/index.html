@@ -49,7 +49,7 @@
 
 
     /* NAV */
-    nav { position: sticky; top: 0; z-index: 1000; display: flex; justify-content: space-between; align-items: center; padding: 1rem 4rem; background: rgba(245,240,232,.97); backdrop-filter: blur(14px); border-bottom: 1px solid rgba(135,88,206,.12); }
+    nav { position: sticky; top: 0; z-index: 1000; display: flex; justify-content: space-between; align-items: center; padding: 1rem 4rem; background: rgba(245,240,232,.97); backdrop-filter: blur(14px); border-bottom: 1px solid rgba(135,88,206,.12); overflow: visible; }
     .nav-logo { display: flex; align-items: center; gap: .75rem; text-decoration: none; }
     .nav-logo img { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; }
     .nav-logo-text { font-family: 'Playfair Display', serif; font-size: 1.25rem; font-weight: 700; color: var(--text); line-height: 1; }
@@ -365,8 +365,8 @@
         display: flex; flex-direction: column; align-items: flex-start;
         position: fixed; top: 0; left: 0; right: 0; bottom: 0;
         background: var(--dark2);
-        padding: 5rem 2rem 2rem;
-        gap: 1.8rem; z-index: 999;
+        padding: 7rem 2rem 2rem;
+        gap: 2rem; z-index: 999;
       }
       .nav-links.open a { font-size: 1.2rem; color: var(--cream); letter-spacing: .05em; }
       .nav-links.open a.nav-jobs { color: var(--muted); font-size: 1rem; }
@@ -1056,14 +1056,17 @@ function verstuurRating() {
 
 // ── INIT ──
   // ── HAMBURGER MENU ──
+document.addEventListener('DOMContentLoaded', () => {
   const menuBtn = document.querySelector('.mobile-menu-btn');
   const navLinks = document.querySelector('.nav-links');
+  if (!menuBtn || !navLinks) return;
+
   menuBtn.addEventListener('click', () => {
     const isOpen = navLinks.classList.toggle('open');
     menuBtn.classList.toggle('open', isOpen);
     document.body.style.overflow = isOpen ? 'hidden' : '';
   });
-  // Sluit menu bij klik op een link
+
   navLinks.querySelectorAll('a').forEach(a => {
     a.addEventListener('click', () => {
       navLinks.classList.remove('open');
@@ -1071,6 +1074,7 @@ function verstuurRating() {
       document.body.style.overflow = '';
     });
   });
+});
 
 window.addEventListener("load", () => {
   checkOpenStatus();
@@ -1091,6 +1095,24 @@ const observer = new IntersectionObserver(entries => {
   entries.forEach(e => { if(e.isIntersecting) e.target.classList.add("visible"); });
 }, { threshold: .12, rootMargin: "0px 0px -40px 0px" });
 document.querySelectorAll(".reveal").forEach(el => observer.observe(el));
+
+document.addEventListener('DOMContentLoaded', function() {
+  var btn = document.querySelector('.mobile-menu-btn');
+  var nav = document.querySelector('.nav-links');
+  if (!btn || !nav) return;
+  btn.onclick = function() {
+    var isOpen = nav.classList.toggle('open');
+    btn.classList.toggle('open', isOpen);
+    document.body.style.overflow = isOpen ? 'hidden' : '';
+  };
+  nav.querySelectorAll('a').forEach(function(a) {
+    a.onclick = function() {
+      nav.classList.remove('open');
+      btn.classList.remove('open');
+      document.body.style.overflow = '';
+    };
+  });
+});
 </script>
 </body>
 </html>
