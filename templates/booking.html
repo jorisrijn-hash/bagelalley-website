@@ -153,9 +153,17 @@
   <div class="booking-card">
     <div class="booking-card-header">
       <h2>Nieuwe reservering</h2>
-      <p>Vul je gegevens in — we bevestigen direct per e-mail</p>
+      <p>Vul je gegevens in, we bevestigen direct per e-mail</p>
     </div>
     <div class="booking-card-body">
+
+      <!-- MELDING ARRANGEMENTEN + GROEPEN -->
+      <div style="background:rgba(135,88,206,.08);border:1px solid rgba(135,88,206,.2);border-radius:10px;padding:1rem 1.2rem;margin-bottom:.5rem;font-size:.85rem;color:var(--muted);line-height:1.7;">
+        <div style="margin-bottom:.5rem;">🍵 <strong style="color:var(--dark)">Arrangement boeken?</strong> Voor High Tea, Tapas box of catering bel je ons:
+          <a href="tel:0705146116" style="color:var(--purple);font-weight:600;">070-514 61 16</a> of WhatsApp <a href="https://wa.me/31651343359" style="color:var(--purple);font-weight:600;">06-513 43 359</a>
+        </div>
+        <div>👥 <strong style="color:var(--dark)">Met 7 of meer personen?</strong> Reserveer telefonisch via <a href="tel:0705146116" style="color:var(--purple);font-weight:600;">070-514 61 16</a></div>
+      </div>
 
       <div class="form-row">
         <div class="form-group">
@@ -175,15 +183,21 @@
         </div>
         <div class="form-group">
           <label class="form-label">Aantal gasten</label>
-          <select id="gasten" class="form-select">
+          <select id="gasten" class="form-select" onchange="checkGroepGrootte(this.value)">
             <option value="1">1 persoon</option>
             <option value="2" selected>2 personen</option>
             <option value="3">3 personen</option>
             <option value="4">4 personen</option>
             <option value="5">5 personen</option>
             <option value="6">6 personen</option>
+            <option value="7+">7 of meer</option>
           </select>
         </div>
+      </div>
+
+      <div id="groepNotice" style="display:none;background:#f5f0ff;border:1px solid rgba(135,88,206,.35);border-radius:10px;padding:1rem 1.2rem;font-size:.88rem;color:#5b3fa0;line-height:1.7;">
+        📞 Voor groepen van 7 of meer personen kun je helaas niet online reserveren.<br>
+        Bel ons op <strong><a href="tel:0705146116" style="color:#8758CE;">070-514 61 16</a></strong> of stuur een WhatsApp naar <strong><a href="https://wa.me/31651343359" style="color:#8758CE;">06-513 43 359</a></strong>.
       </div>
 
       <div class="form-group">
@@ -310,7 +324,28 @@ async function verstuurReservering() {
   const email  = document.getElementById("email").value.trim();
   const tel    = document.getElementById("telefoon").value.trim();
   const datum  = document.getElementById("datum").value;
-  const gasten = parseInt(document.getElementById("gasten").value);
+function checkGroepGrootte(val) {
+  var notice = document.getElementById("groepNotice");
+  var slotGrid = document.getElementById("slotGrid");
+  var slotLabel = document.querySelector(".slot-label");
+  var btnSubmit = document.querySelector(".btn-submit");
+  var datumGroup = document.getElementById("datum")?.closest(".form-group");
+  if (val === "7+") {
+    notice.style.display = "block";
+    if (slotGrid) slotGrid.style.display = "none";
+    if (slotLabel) slotLabel.style.display = "none";
+    if (btnSubmit) btnSubmit.style.display = "none";
+    if (datumGroup) datumGroup.style.display = "none";
+  } else {
+    notice.style.display = "none";
+    if (slotGrid) slotGrid.style.display = "grid";
+    if (slotLabel) slotLabel.style.display = "block";
+    if (btnSubmit) btnSubmit.style.display = "block";
+    if (datumGroup) datumGroup.style.display = "flex";
+  }
+}
+
+
   const err    = document.getElementById("formError");
   const ok     = document.getElementById("formSuccess");
   const btn    = document.getElementById("submitBtn");
