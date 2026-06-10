@@ -68,7 +68,7 @@
     .mobile-menu-btn.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
     /* HERO */
-    .hero { position: relative; height: 100vh; min-height: 640px; overflow: hidden; display: flex; align-items: flex-end; }
+    .hero { position: relative; height: 100vh; min-height: 580px; overflow: hidden; display: flex; align-items: flex-end; }
     .hero-bg { position: absolute; inset: 0; background-image: url("{{ url_for('static', filename='fotos/pexels-roman-odintsov-4869221.jpg') }}"); background-size: cover; background-position: center 45%; animation: heroZoom 12s ease-out forwards; }
     @keyframes heroZoom { from { transform: scale(1.05); } to { transform: scale(1); } }
     .hero-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(26,16,24,.93) 0%, rgba(26,16,24,.55) 45%, rgba(26,16,24,.12) 100%); }
@@ -362,12 +362,9 @@
       nav { padding: .9rem 1.5rem; }
       .nav-links { display: none; }
       .mobile-menu-btn { display: flex; cursor: pointer; z-index: 1000; position: relative; }
-      .nav-close-btn {
-        display: none; position: fixed; top: 1.2rem; right: 1.5rem;
-        z-index: 9999; font-size: 1.4rem; color: rgba(245,240,232,.6);
-        cursor: pointer; padding: .5rem; line-height: 1;
-      }
+      .nav-close-btn { display: none; position: fixed; top: 1.2rem; right: 1.5rem; z-index: 9999; font-size: 1.4rem; color: rgba(245,240,232,.6); cursor: pointer; padding: .5rem; line-height: 1; }
       #nav-toggle:checked ~ nav .nav-close-btn { display: block; }
+      .nav-close-btn { display: none !important; }
       #nav-toggle:checked ~ nav .nav-links {
         display: flex; flex-direction: column; align-items: flex-start;
         position: fixed; top: 0; left: 0; right: 0; bottom: 0;
@@ -383,7 +380,7 @@
       #nav-toggle:checked ~ nav .mobile-menu-btn span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
       
       .hero-content { padding: 0 1.5rem 3rem; }
-      .hero-stats { display: none; }
+
       .shortcuts { grid-template-columns: 1fr; height: auto; }
       .shortcut-card { height: 220px; }
       .info-strip { flex-direction: column; }
