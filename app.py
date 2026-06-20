@@ -394,6 +394,11 @@ def shop():
     return render_template("shop.html", bedrijf=BEDRIJF)
 
 
+@app.route("/bestellen")
+def bestellen():
+    return render_template("bestellen.html", bedrijf=BEDRIJF)
+
+
 @app.route("/jobs")
 def jobs():
     return render_template("jobs.html", bedrijf=BEDRIJF)
