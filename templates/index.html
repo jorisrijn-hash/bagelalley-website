@@ -147,6 +147,9 @@
     .btn-purple:hover { background: var(--purple3); transform: translateY(-1px); }
     .btn-ghost-light { background: transparent; color: var(--cream); padding: 1rem 2.4rem; font-size: .88rem; font-weight: 500; letter-spacing: .07em; text-transform: uppercase; border: 1.5px solid rgba(245,240,232,.45); cursor: pointer; text-decoration: none; display: inline-block; border-radius: 3px; transition: all .2s; }
     .btn-ghost-light:hover { background: rgba(245,240,232,.1); border-color: var(--cream); transform: translateY(-1px); }
+    .hero-diet { margin-top: 1.5rem; opacity: 0; animation: fadeUp .8s 1s forwards; }
+    .hero-diet-pill { display: inline-flex; align-items: center; gap: .55rem; background: rgba(135,88,206,.2); border: 1px solid rgba(135,88,206,.5); color: var(--cream); font-size: .82rem; font-weight: 500; padding: .5rem 1.1rem; border-radius: 99px; backdrop-filter: blur(6px); }
+    .hero-diet-pill .hero-diet-check { display: inline-flex; align-items: center; justify-content: center; width: 17px; height: 17px; border-radius: 50%; background: var(--purple2); color: var(--dark); font-size: .62rem; font-weight: 800; }
     .hero-stats { position: absolute; bottom: 0; right: 0; display: flex; z-index: 2; opacity: 0; animation: fadeIn .8s 1.1s forwards; }
     .hero-stat { background: rgba(26,16,24,.82); backdrop-filter: blur(10px); padding: 1.4rem 2.2rem; border-left: 1px solid rgba(135,88,206,.2); text-align: center; }
     .hero-stat-number { font-family: 'Playfair Display', serif; font-size: 1.9rem; font-weight: 700; color: var(--purple2); display: block; line-height: 1; }
@@ -499,6 +502,9 @@
     <div class="hero-buttons">
       <a href="/reserveren" class="btn-purple">Tafel reserveren</a>
       <a href="#menu" class="btn-ghost-light">Bekijk het menu</a>
+    </div>
+    <div class="hero-diet">
+      <span class="hero-diet-pill"><span class="hero-diet-check">✓</span> Ook glutenvrije &amp; lactosevrije bagels</span>
     </div>
   </div>
   <div class="hero-stats">
