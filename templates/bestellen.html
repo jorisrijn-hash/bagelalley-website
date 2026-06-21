@@ -59,6 +59,7 @@
 
     /* PRODUCT CARDS (STAP 1) */
     .product-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+    .multi-hint { font-size: .82rem; color: var(--purple2); background: rgba(135,88,206,.08); border: 1px solid rgba(135,88,206,.18); border-radius: 8px; padding: .7rem .9rem; margin-bottom: 1.1rem; line-height: 1.5; }
     .product-card { border: 1.5px solid rgba(135,88,206,.18); border-radius: 10px; padding: 1.1rem; cursor: pointer; transition: all .15s; position: relative; }
     .product-card:hover { border-color: var(--purple); background: rgba(135,88,206,.04); }
     .product-card.gekozen { border-color: var(--purple); background: rgba(135,88,206,.07); box-shadow: 0 0 0 3px rgba(135,88,206,.08); }
@@ -164,7 +165,7 @@
 <div class="order-hero">
   <span class="order-hero-label">Wassenaar · Langstraat 42</span>
   <h1>Bestel je taart<br><em>vers gemaakt, klaar voor jou.</em></h1>
-  <p class="order-hero-sub">Kies je taart, voeg eventueel een tekst toe en geef aan wanneer je hem komt afhalen.</p>
+  <p class="order-hero-sub">Kies één of meerdere taarten, voeg eventueel een tekst toe en geef aan wanneer je ze komt afhalen.</p>
 </div>
 
 <!-- STEP PROGRESS -->
@@ -199,10 +200,11 @@
 
       <!-- STAP 1: PRODUCT -->
       <div class="step-panel active" data-panel="1">
+        <p class="multi-hint">💡 Je kunt meerdere taarten kiezen — klik op een formaat om toe te voegen, klik nogmaals om te verwijderen.</p>
         <div class="product-grid" id="productGrid">
           <!-- cards worden via JS gevuld -->
         </div>
-        <div class="form-error" id="error1">Kies eerst een taart en een formaat.</div>
+        <div class="form-error" id="error1">Kies eerst minimaal één taart met een formaat.</div>
         <div class="step-nav">
           <span></span>
           <button class="btn-next" onclick="goToStep(2)">Volgende →</button>
@@ -339,7 +341,7 @@
     { id: 'carrot',  naam: 'Carrot Cake',     klein: null,  groot: 45.00 }, // alleen groot
   ];
 
-  let gekozenProduct = null;   // { id, naam, formaat: 'klein'|'groot', prijs }
+  let gekozenProducten = {};   // { id: { id, naam, formaat: 'klein'|'groot', prijs } }
   let tekstAan = false;
   let gekozenSlot = null;
 
@@ -365,7 +367,7 @@
     grid.appendChild(card);
   });
 
-  // klikken op een formaat-optie selecteert het hele product
+  // klikken op een formaat-optie voegt de taart toe / wisselt formaat / haalt 'm weg
   grid.addEventListener('click', (e) => {
     const opt = e.target.closest('.size-opt');
     if (!opt) return;
@@ -373,14 +375,21 @@
     const formaat = opt.dataset.formaat;
     const product = producten.find(p => p.id === id);
     const prijs = formaat === 'klein' ? product.klein : product.groot;
+    const card = opt.closest('.product-card');
 
-    gekozenProduct = { id, naam: product.naam, formaat, prijs };
-
-    // visuele state bijwerken
-    document.querySelectorAll('.product-card').forEach(c => c.classList.remove('gekozen'));
-    document.querySelectorAll('.size-opt').forEach(o => o.classList.remove('gekozen'));
-    opt.closest('.product-card').classList.add('gekozen');
-    opt.classList.add('gekozen');
+    const huidige = gekozenProducten[id];
+    if (huidige && huidige.formaat === formaat) {
+      // zelfde taart + formaat nogmaals aangeklikt → weer deselecteren
+      delete gekozenProducten[id];
+      card.classList.remove('gekozen');
+      card.querySelectorAll('.size-opt').forEach(o => o.classList.remove('gekozen'));
+    } else {
+      // taart toevoegen of het formaat wisselen (meerdere taarten mogelijk)
+      gekozenProducten[id] = { id, naam: product.naam, formaat, prijs };
+      card.classList.add('gekozen');
+      card.querySelectorAll('.size-opt').forEach(o => o.classList.remove('gekozen'));
+      opt.classList.add('gekozen');
+    }
 
     document.getElementById('error1').style.display = 'none';
     updateSummary();
@@ -458,7 +467,7 @@
   }
 
   function valideerStap1() {
-    if (!gekozenProduct) {
+    if (Object.keys(gekozenProducten).length === 0) {
       document.getElementById('error1').style.display = 'block';
       return false;
     }
@@ -492,10 +501,14 @@
     let total = 0;
     let html = '';
 
-    if (gekozenProduct) {
-      const formaatLabel = gekozenProduct.formaat === 'klein' ? 'Klein' : 'Groot';
-      html += `<div class="summary-line"><span>${gekozenProduct.naam} (${formaatLabel})</span><span>€${gekozenProduct.prijs.toFixed(2).replace('.', ',')}</span></div>`;
-      total += gekozenProduct.prijs;
+    const ids = Object.keys(gekozenProducten);
+    if (ids.length > 0) {
+      ids.forEach(id => {
+        const p = gekozenProducten[id];
+        const formaatLabel = p.formaat === 'klein' ? 'Klein' : 'Groot';
+        html += `<div class="summary-line"><span>${p.naam} (${formaatLabel})</span><span>€${p.prijs.toFixed(2).replace('.', ',')}</span></div>`;
+        total += p.prijs;
+      });
 
       if (tekstAan) {
         html += `<div class="summary-line"><span>Tekst op taart</span><span>€6,00</span></div>`;
@@ -521,7 +534,7 @@
 
     // TODO: hier komt later de daadwerkelijke verzending naar de backend (e-mail / database)
     console.log('Bestelling (nog niet verzonden):', {
-      product: gekozenProduct,
+      taarten: Object.values(gekozenProducten),
       tekstOpTaart: tekstAan ? document.getElementById('tekstOpTaart').value : null,
       afhaaldatum: document.getElementById('afhaaldatum').value,
       afhaaltijd: gekozenSlot,
