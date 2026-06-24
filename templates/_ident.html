@@ -1,0 +1,63 @@
+<!-- jorisvrr ident — maker-signature, herbruikbaar. Verschijnt subtiel rechtsonder bij de footer. -->
+<style>
+  #ident {
+    position: fixed;
+    right: clamp(1rem, 3vw, 2rem);
+    bottom: clamp(1rem, 3vw, 2rem);
+    z-index: 60;
+    display: inline-flex; align-items: center; gap: 0;
+    text-decoration: none;
+    color: #9a9ca1;                 /* kleur van "jorisvrr" op donkere footer */
+    opacity: 0; transform: translateY(12px); pointer-events: none;
+    transition: opacity .4s ease, transform .4s ease, color .35s ease;
+  }
+  #ident.show { opacity: .4; transform: none; pointer-events: auto; }          /* subtiel */
+  #ident:hover, #ident:focus-visible { opacity: .95; color: #ececef; }         /* duidelijker */
+
+  .ident__cur {
+    display: block; height: 40px; width: auto;
+    filter: grayscale(1);           /* logo blijft grijs; bij een donker logo: brightness(1.7) */
+    transition: filter .35s ease;
+  }
+  #ident:hover .ident__cur { filter: grayscale(1) brightness(1.15); }
+
+  .ident__name {
+    font-family: ui-monospace, "Space Mono", monospace;
+    font-size: .72rem; letter-spacing: .1em; white-space: nowrap;
+    max-width: 0; opacity: 0; overflow: hidden;
+    transition: max-width .4s ease, opacity .35s ease, margin .4s ease;
+  }
+  #ident:hover .ident__name,
+  #ident:focus-visible .ident__name { max-width: 140px; opacity: 1; margin-right: .55rem; }
+
+  /* soepele wissel met de chat-widget (alleen relevant op pagina's met chat) */
+  #chatWrapper { transition: opacity .35s ease; }
+</style>
+
+<a id="ident" href="https://jorisvrrwebdev.vercel.app/" target="_blank"
+   rel="noopener noreferrer" aria-label="Website gemaakt door jorisvrr">
+  <span class="ident__name">jorisvrr</span>
+  <img class="ident__cur" src="{{ url_for('static', filename='img/jorisvrr-cursor.png') }}" alt="" height="40">
+</a>
+
+<script>
+  (function () {
+    var ident = document.getElementById('ident');
+    if (!ident) return;
+    var chat = document.getElementById('chatWrapper');        // optioneel, site-specifiek
+    var chatBox = document.getElementById('chatContainer');
+    function chatOpen() { return chatBox && !chatBox.classList.contains('verborgen'); }
+    function update() {
+      var nearBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight - 80;
+      var show = nearBottom && !chatOpen();
+      ident.classList.toggle('show', show);
+      if (chat) {                     // chat en ident wisselen elkaar netjes af onderaan
+        chat.style.opacity = show ? '0' : '';
+        chat.style.pointerEvents = show ? 'none' : '';
+      }
+    }
+    window.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+    update();
+  })();
+</script>

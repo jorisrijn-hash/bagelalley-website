@@ -125,6 +125,7 @@
       .slot-grid { grid-template-columns: repeat(3, 1fr); }
     }
   </style>
+  {% include "_favicons.html" %}
 </head>
 <body>
 
@@ -370,5 +371,6 @@ async function verstuurReservering() {
 // Laad direct slots voor vandaag
 laadSlots();
 </script>
+{% include "_ident.html" %}
 </body>
 </html>
