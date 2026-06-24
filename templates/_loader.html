@@ -1,40 +1,38 @@
-{# Paginalaad-animatie - herbruikbaar, valt vanzelf weg (CSS-failsafe + JS) #}
+{# Paginalaad-animatie - huisstijl, logo met draaiende ring. Valt vanzelf weg. #}
 <div id="ba-loader" aria-hidden="true">
   <div class="ba-loader-inner">
-    <svg class="ba-bagel" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="50" cy="50" r="30" fill="none" stroke="#d4a056" stroke-width="18"/>
-      <circle cx="50" cy="50" r="39" fill="none" stroke="#b9863f" stroke-width="1.4" opacity=".55"/>
-      <circle cx="50" cy="50" r="21" fill="none" stroke="#b9863f" stroke-width="1.4" opacity=".55"/>
-      <g fill="#f4e6c8">
-        <ellipse cx="80"   cy="50"   rx="2.1" ry="3.6"/>
-        <ellipse cx="74.3" cy="67.6" rx="2.1" ry="3.6"/>
-        <ellipse cx="59.3" cy="78.5" rx="2.1" ry="3.6"/>
-        <ellipse cx="40.7" cy="78.5" rx="2.1" ry="3.6"/>
-        <ellipse cx="25.7" cy="67.6" rx="2.1" ry="3.6"/>
-        <ellipse cx="20"   cy="50"   rx="2.1" ry="3.6"/>
-        <ellipse cx="25.7" cy="32.4" rx="2.1" ry="3.6"/>
-        <ellipse cx="40.7" cy="21.5" rx="2.1" ry="3.6"/>
-        <ellipse cx="59.3" cy="21.5" rx="2.1" ry="3.6"/>
-        <ellipse cx="74.3" cy="32.4" rx="2.1" ry="3.6"/>
-      </g>
-    </svg>
+    <div class="ba-logo-orbit">
+      <svg class="ba-ring" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="60" cy="60" r="55" fill="none" stroke="rgba(135,88,206,.16)" stroke-width="2"/>
+        <circle cx="60" cy="60" r="55" fill="none" stroke="#9B6EE0" stroke-width="2.5"
+                stroke-linecap="round" stroke-dasharray="62 280"/>
+      </svg>
+      <img class="ba-logo" src="{{ url_for('static', filename='favicon/android-chrome-192x192.png') }}" alt="Bagel Alley">
+    </div>
     <div class="ba-loader-word">Bagel <span>Alley</span></div>
   </div>
 </div>
 <style>
   #ba-loader { position: fixed; inset: 0; z-index: 9999; display: flex; align-items: center; justify-content: center;
-    background: #F5F0E8; animation: baLoaderOut .6s ease 1.2s forwards; }
+    background: radial-gradient(circle at 50% 42%, #271b30 0%, #1A1018 62%);
+    animation: baLoaderOut .6s ease 1.35s forwards; }
   .ba-loader-inner { text-align: center; }
-  .ba-bagel { width: 66px; height: 66px; transform-origin: 50% 50%; animation: baSpin 1.1s linear infinite; }
-  .ba-loader-word { margin-top: 18px; font-family: 'Playfair Display', Georgia, serif; font-size: 1.45rem;
-    color: #2a2230; letter-spacing: .01em; opacity: 0; animation: baWordIn .55s ease .15s forwards; }
-  .ba-loader-word span { color: #8758CE; font-style: italic; }
+  .ba-logo-orbit { position: relative; width: 120px; height: 120px; margin: 0 auto; }
+  .ba-ring { position: absolute; inset: 0; width: 120px; height: 120px; transform-origin: 50% 50%;
+    animation: baSpin 1.2s linear infinite; }
+  .ba-logo { position: absolute; top: 50%; left: 50%; width: 72px; height: 72px;
+    transform: translate(-50%, -50%); filter: drop-shadow(0 0 16px rgba(135,88,206,.55));
+    animation: baPulse 1.7s ease-in-out infinite; }
+  .ba-loader-word { margin-top: 22px; font-family: 'Playfair Display', Georgia, serif; font-size: 1.5rem;
+    color: #F5F0E8; letter-spacing: .01em; opacity: 0; animation: baWordIn .6s ease .2s forwards; }
+  .ba-loader-word span { color: #9B6EE0; font-style: italic; }
   #ba-loader.ba-hide { opacity: 0; visibility: hidden; transition: opacity .5s ease; }
   @keyframes baSpin { to { transform: rotate(360deg); } }
+  @keyframes baPulse { 0%, 100% { transform: translate(-50%,-50%) scale(1); } 50% { transform: translate(-50%,-50%) scale(1.06); } }
   @keyframes baWordIn { to { opacity: 1; } }
   @keyframes baLoaderOut { to { opacity: 0; visibility: hidden; } }
   @media (prefers-reduced-motion: reduce) {
-    .ba-bagel { animation: none; }
+    .ba-ring, .ba-logo { animation: none; }
     .ba-loader-word { animation: none; opacity: 1; }
     #ba-loader { animation: baLoaderOut .4s ease .3s forwards; }
   }
