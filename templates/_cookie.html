@@ -1,0 +1,41 @@
+{# Cookiemelding - herbruikbaar, onthoudt keuze in localStorage #}
+<div id="ba-cookie" class="ba-cookie" role="dialog" aria-label="Cookiemelding" aria-live="polite">
+  <div class="ba-cookie-text">
+    We gebruiken functionele cookies zodat de website goed werkt en je reservering soepel verloopt.
+    Door verder te gaan ga je hiermee akkoord.
+  </div>
+  <div class="ba-cookie-btns">
+    <button type="button" class="ba-cookie-accept" onclick="baCookie(true)">Akkoord</button>
+    <button type="button" class="ba-cookie-decline" onclick="baCookie(false)">Weigeren</button>
+  </div>
+</div>
+<style>
+  .ba-cookie { position: fixed; left: clamp(1rem, 3vw, 2rem); bottom: clamp(1rem, 3vw, 2rem); z-index: 70;
+    max-width: 330px; background: #241E2A; border: 1px solid rgba(135,88,206,.3); border-radius: 14px;
+    padding: 1.1rem 1.2rem; box-shadow: 0 14px 44px rgba(0,0,0,.4);
+    transform: translateY(160%); transition: transform .45s cubic-bezier(.4,0,.2,1);
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif; }
+  .ba-cookie.show { transform: none; }
+  .ba-cookie-text { color: rgba(245,240,232,.8); font-size: .81rem; line-height: 1.55; margin-bottom: .9rem; }
+  .ba-cookie-btns { display: flex; gap: .55rem; }
+  .ba-cookie-accept { flex: 1; background: #8758CE; color: #fff; border: none; padding: .6rem; border-radius: 8px;
+    font-size: .82rem; font-weight: 600; cursor: pointer; font-family: inherit; transition: background .2s; }
+  .ba-cookie-accept:hover { background: #6E42B0; }
+  .ba-cookie-decline { background: transparent; color: rgba(245,240,232,.55); border: 1px solid rgba(245,240,232,.18);
+    padding: .6rem .9rem; border-radius: 8px; font-size: .82rem; cursor: pointer; font-family: inherit; transition: color .2s; }
+  .ba-cookie-decline:hover { color: rgba(245,240,232,.9); }
+</style>
+<script>
+  (function () {
+    var el = document.getElementById('ba-cookie');
+    if (!el) return;
+    var KEY = 'ba-cookie-consent';
+    try { if (localStorage.getItem(KEY)) { el.parentNode.removeChild(el); return; } } catch (e) {}
+    setTimeout(function () { el.classList.add('show'); }, 800);
+    window.baCookie = function (ok) {
+      try { localStorage.setItem(KEY, ok ? 'accepted' : 'declined'); } catch (e) {}
+      el.classList.remove('show');
+      setTimeout(function () { if (el && el.parentNode) el.parentNode.removeChild(el); }, 500);
+    };
+  })();
+</script>

@@ -3,7 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bagel Alley | Breakfast · Lunch · Tea · Take Away, Wassenaar</title>
+  {% set seo_title = "Bagel Alley | Bagels, Breakfast, Lunch & High Tea in Wassenaar" %}
+  {% set seo_desc = "Bagel Alley in Wassenaar: vers belegde bagels, breakfast, lunch, high tea en tapas. Ook glutenvrij & lactosevrij. Reserveer een tafel of bestel online." %}
+  {% set seo_path = "/" %}
+  {% include "_seo.html" %}
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
@@ -470,6 +473,7 @@
   {% include "_favicons.html" %}
 </head>
 <body>
+{% include "_loader.html" %}
 
 <!-- NAV -->
 <input type="checkbox" id="nav-toggle" style="display:none">
@@ -784,6 +788,21 @@
     <p class="cadeaubon-body">Cadeaubonnen beschikbaar vanaf €5. Het perfecte cadeau voor een verjaardag, jubileum of gewoon omdat je aan iemand denkt. Verkrijgbaar in de zaak.</p>
   </div>
   <a href="#contact" class="btn-white">Meer informatie</a>
+</section>
+
+<!-- BRUIDSTAART -->
+<section class="sfeer-section" id="bruidstaart" style="padding-top:0;">
+  <div class="sfeer-grid" style="grid-template-columns:1fr 1fr;grid-template-rows:auto;gap:3rem;align-items:center;">
+    <div class="sfeer-img reveal" style="height:360px;border-radius:3px;">
+      <img src="{{ url_for('static', filename='specials/bruidstaart-home.jpg') }}" alt="Bruidstaart op maat van Bagel Alley" loading="lazy" style="width:100%;height:100%;object-fit:cover;">
+    </div>
+    <div class="reveal reveal-delay-1">
+      <span class="section-label" style="color:var(--purple2)">Voor jullie grote dag</span>
+      <h3 class="sfeer-text-title" style="color:var(--dark);font-size:1.7rem;margin-top:.6rem;">Bruidstaart op maat</h3>
+      <p class="sfeer-text-body" style="color:var(--muted);margin-top:.8rem;">Trouwen, een jubileum of een feest om nooit te vergeten? Wij maken jullie bruidstaart volledig op maat &mdash; vers, ambachtelijk en precies zoals jullie 'm voor je zien. Van een klassieke witte taart tot een verrassende smaakcombinatie: samen bedenken we de perfecte taart voor jullie dag.</p>
+      <a href="/shop" class="sfeer-link" style="color:var(--purple2);margin-top:.9rem;display:inline-block;">Vraag een bruidstaart aan &rarr;</a>
+    </div>
+  </div>
 </section>
 
 <!-- CONTACT -->
@@ -1331,5 +1350,6 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 {% include "_ident.html" %}
+{% include "_cookie.html" %}
 </body>
 </html>

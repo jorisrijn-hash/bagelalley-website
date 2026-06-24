@@ -3,7 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Taart bestellen — Bagel Alley Wassenaar</title>
+  {% set seo_title = "Taart bestellen | Bagel Alley Wassenaar" %}
+  {% set seo_desc = "Bestel je taart online bij Bagel Alley Wassenaar. Kies een of meerdere taarten, voeg een persoonlijke tekst toe en haal vers af in Wassenaar." %}
+  {% set seo_path = "/bestellen" %}
+  {% set seo_crumb = "Taart bestellen" %}
+  {% include "_seo.html" %}
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
@@ -153,6 +157,7 @@
   {% include "_favicons.html" %}
 </head>
 <body>
+{% include "_loader.html" %}
 
 <!-- NAV -->
 <nav>
@@ -548,5 +553,6 @@
 </script>
 
 {% include "_ident.html" %}
+{% include "_cookie.html" %}
 </body>
 </html>

@@ -3,7 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Reserveren — Bagel Alley Wassenaar</title>
+  {% set seo_title = "Tafel reserveren | Bagel Alley Wassenaar" %}
+  {% set seo_desc = "Reserveer eenvoudig online een tafel bij Bagel Alley in Wassenaar. Direct bevestigd. Geniet van breakfast, lunch of high tea." %}
+  {% set seo_path = "/reserveren" %}
+  {% set seo_crumb = "Reserveren" %}
+  {% include "_seo.html" %}
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
@@ -85,6 +89,9 @@
 
     /* SUBMIT BTN */
     .btn-submit { background: var(--purple); color: white; border: none; padding: 1rem 2rem; font-size: .92rem; font-weight: 500; border-radius: 8px; cursor: pointer; transition: background .2s, transform .15s; width: 100%; font-family: 'DM Sans', sans-serif; letter-spacing: .04em; }
+    .nieuwsbrief-optin { display: flex; align-items: flex-start; gap: .6rem; margin: 0 0 1rem; padding: .85rem 1rem; background: rgba(135,88,206,.06); border: 1px solid rgba(135,88,206,.18); border-radius: 8px; cursor: pointer; font-size: .82rem; color: #5a5560; line-height: 1.5; }
+    .nieuwsbrief-optin input { margin-top: .15rem; width: 16px; height: 16px; accent-color: var(--purple); flex-shrink: 0; cursor: pointer; }
+    .nieuwsbrief-optin strong { color: var(--purple3); font-weight: 600; }
     .btn-submit:hover { background: var(--purple3); transform: translateY(-1px); }
     .btn-submit:disabled { opacity: .6; cursor: not-allowed; transform: none; }
 
@@ -128,6 +135,7 @@
   {% include "_favicons.html" %}
 </head>
 <body>
+{% include "_loader.html" %}
 
 <!-- NAV -->
 <nav>
@@ -210,6 +218,11 @@
         <strong>🥯 Gelukt! Je reservering is bevestigd.</strong>
         <span id="successDetails"></span>
       </div>
+
+      <label class="nieuwsbrief-optin" for="nieuwsbrief">
+        <input type="checkbox" id="nieuwsbrief">
+        <span>Ja, houd me op de hoogte van de <strong>Bagel van de Maand</strong> en nieuwtjes. Je ontvangt dan onze nieuwsbrief op dit e-mailadres.</span>
+      </label>
 
       <button class="btn-submit" id="submitBtn" onclick="verstuurReservering()">Tafel reserveren</button>
     </div>
@@ -336,7 +349,7 @@ async function verstuurReservering() {
     const r = await fetch("/reserveren", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ naam, email, gasten, datum, tijd: gekozenSlot, telefoon: tel })
+      body: JSON.stringify({ naam, email, gasten, datum, tijd: gekozenSlot, telefoon: tel, nieuwsbrief: document.getElementById("nieuwsbrief").checked })
     });
     const data = await r.json();
     btn.textContent = "Tafel reserveren"; btn.disabled = false;
@@ -372,5 +385,6 @@ async function verstuurReservering() {
 laadSlots();
 </script>
 {% include "_ident.html" %}
+{% include "_cookie.html" %}
 </body>
 </html>
