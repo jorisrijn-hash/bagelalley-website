@@ -6,7 +6,7 @@
   {% set seo_title = "Bagel Alley | Bagels, Breakfast, Lunch & High Tea in Wassenaar" %}
   {% set seo_desc = "Bagel Alley in Wassenaar: vers belegde bagels, breakfast, lunch, high tea en tapas. Ook glutenvrij & lactosevrij. Reserveer een tafel of bestel online." %}
   {% set seo_path = "/" %}
-  {% include "_seo.html" %}
+  {% include "_seo.html" ignore missing %}
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
@@ -470,10 +470,10 @@
       #chatWrapper { width: 100%; right: 0; }
     }
   </style>
-  {% include "_favicons.html" %}
+  {% include "_favicons.html" ignore missing %}
 </head>
 <body>
-{% include "_loader.html" %}
+{% include "_loader.html" ignore missing %}
 
 <!-- NAV -->
 <input type="checkbox" id="nav-toggle" style="display:none">
@@ -1349,7 +1349,7 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
 </script>
-{% include "_ident.html" %}
-{% include "_cookie.html" %}
+{% include "_ident.html" ignore missing %}
+{% include "_cookie.html" ignore missing %}
 </body>
 </html>

@@ -7,7 +7,7 @@
   {% set seo_desc = "Bestel je taart online bij Bagel Alley Wassenaar. Kies een of meerdere taarten, voeg een persoonlijke tekst toe en haal vers af in Wassenaar." %}
   {% set seo_path = "/bestellen" %}
   {% set seo_crumb = "Taart bestellen" %}
-  {% include "_seo.html" %}
+  {% include "_seo.html" ignore missing %}
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
@@ -154,10 +154,10 @@
       .slot-grid { grid-template-columns: repeat(3, 1fr); }
     }
   </style>
-  {% include "_favicons.html" %}
+  {% include "_favicons.html" ignore missing %}
 </head>
 <body>
-{% include "_loader.html" %}
+{% include "_loader.html" ignore missing %}
 
 <!-- NAV -->
 <nav>
@@ -552,7 +552,7 @@
   }
 </script>
 
-{% include "_ident.html" %}
-{% include "_cookie.html" %}
+{% include "_ident.html" ignore missing %}
+{% include "_cookie.html" ignore missing %}
 </body>
 </html>

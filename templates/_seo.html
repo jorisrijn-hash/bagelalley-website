@@ -1,0 +1,31 @@
+{# SEO meta - per-pagina gevoed via seo_title / seo_desc / seo_path #}
+{% set _t = seo_title | default("Bagel Alley | Bagels, Breakfast & Lunch in Wassenaar") %}
+{% set _d = seo_desc | default("Bagel Alley in Wassenaar: vers belegde bagels, breakfast, lunch, high tea en tapas. Ook glutenvrij & lactosevrij.") %}
+{% set _p = seo_path | default("/") %}
+<title>{{ _t }}</title>
+<meta name="description" content="{{ _d }}">
+<link rel="canonical" href="{{ site_url }}{{ _p }}">
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Bagel Alley">
+<meta property="og:locale" content="nl_NL">
+<meta property="og:title" content="{{ _t }}">
+<meta property="og:description" content="{{ _d }}">
+<meta property="og:url" content="{{ site_url }}{{ _p }}">
+<meta property="og:image" content="{{ site_url }}/static/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Bagel Alley — bagels, breakfast, lunch & high tea in Wassenaar">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{ _t }}">
+<meta name="twitter:description" content="{{ _d }}">
+<meta name="twitter:image" content="{{ site_url }}/static/og-image.jpg">
+
+<script type="application/ld+json">{{ restaurant_schema_json | safe }}</script>
+{% if _p and _p != "/" %}
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"{{ site_url }}/"},{"@type":"ListItem","position":2,"name":"{{ seo_crumb | default(_t) }}","item":"{{ site_url }}{{ _p }}"}]}
+</script>
+{% endif %}

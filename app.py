@@ -14,8 +14,6 @@ app.secret_key = os.environ.get("SECRET_KEY", "bagelalley-secret-change-me")
 # region ── SECURITY: proxy, rate limiting, validatie-helpers ────
 import hmac
 from werkzeug.middleware.proxy_fix import ProxyFix
-from flask_limiter import Limiter
-from flask_limiter.util import get_remote_address
 
 # Railway zit achter een reverse proxy: vertrouw 1 proxy-hop zodat we het
 # echte client-IP zien (nodig voor correcte rate limiting) en de juiste scheme.
@@ -24,19 +22,45 @@ app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1)
 # Rate limiter op ALLE endpoints (default), met strengere limieten per route.
 # In-memory volstaat voor 1 instance; voor meerdere workers/instances:
 # zet RATELIMIT_STORAGE_URI naar bijv. een Redis-URL.
-limiter = Limiter(
-    key_func=get_remote_address,
-    app=app,
-    default_limits=["300 per hour", "60 per minute"],
-    storage_uri=os.environ.get("RATELIMIT_STORAGE_URI", "memory://"),
-    strategy="fixed-window",
-)
+# Defensief geladen: ontbreekt Flask-Limiter, dan blijft de site draaien
+# (zonder rate limiting) i.p.v. te crashen. Voeg het toe aan requirements.txt
+# om de limieten echt te activeren.
+try:
+    from flask_limiter import Limiter
+    from flask_limiter.util import get_remote_address
 
-@limiter.request_filter
-def _rate_limit_exempt():
-    # Statische bestanden en infra-endpoints niet limiteren (anders breken
-    # asset-loads en health checks). Echte endpoints blijven wél begrensd.
-    return request.endpoint in {"static", "ping", "robots_txt", "sitemap_xml"}
+    limiter = Limiter(
+        key_func=get_remote_address,
+        app=app,
+        default_limits=["300 per hour", "60 per minute"],
+        storage_uri=os.environ.get("RATELIMIT_STORAGE_URI", "memory://"),
+        strategy="fixed-window",
+    )
+
+    @limiter.request_filter
+    def _rate_limit_exempt():
+        # Statische bestanden en infra-endpoints niet limiteren (anders breken
+        # asset-loads en health checks). Echte endpoints blijven wél begrensd.
+        return request.endpoint in {"static", "ping", "robots_txt", "sitemap_xml"}
+
+except ImportError:
+    print("[WAARSCHUWING] Flask-Limiter niet geinstalleerd - rate limiting staat UIT. "
+          "Voeg 'Flask-Limiter' toe aan requirements.txt en deploy opnieuw.")
+
+    class _NoLimiter:
+        """Vervanger die niets limiteert, zodat de decorators blijven werken."""
+        def limit(self, *a, **k):
+            def deco(f):
+                return f
+            return deco
+
+        def request_filter(self, f):
+            return f
+
+        def exempt(self, f):
+            return f
+
+    limiter = _NoLimiter()
 
 def _safe_eq(a, b) -> bool:
     """Constant-time string-vergelijking (tegen timing-attacks)."""
@@ -62,6 +86,31 @@ def _ratelimit_handler(e):
         "antwoord": "Te veel verzoeken — wacht even en probeer het zo opnieuw.",
         "fout": "Te veel verzoeken — wacht even en probeer het zo opnieuw.",
     }), 429
+
+def _error_pagina(titel: str, tekst: str, code: int):
+    # Inline HTML zonder template, zodat de foutpagina zelf nooit kan falen.
+    html = f"""<!DOCTYPE html><html lang="nl"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0"><title>{titel} &mdash; Bagel Alley</title>
+<style>body{{margin:0;height:100vh;display:flex;align-items:center;justify-content:center;
+background:radial-gradient(circle at 50% 40%,#271b30,#1A1018);color:#F5F0E8;
+font-family:Georgia,'Times New Roman',serif;text-align:center;padding:24px;}}
+.c{{max-width:440px}}.b{{font-size:64px;font-weight:bold;color:#9B6EE0;line-height:1}}
+h1{{font-size:24px;margin:14px 0 8px}}p{{color:rgba(245,240,232,.65);font-size:15px;line-height:1.6;
+font-family:Arial,sans-serif}}a{{display:inline-block;margin-top:20px;background:#8758CE;color:#fff;
+text-decoration:none;padding:12px 26px;border-radius:8px;font-family:Arial,sans-serif;font-size:14px;font-weight:bold}}</style>
+</head><body><div class="c"><div class="b">{code}</div><h1>{titel}</h1><p>{tekst}</p>
+<a href="/">Terug naar de homepage</a></div></body></html>"""
+    return html, code
+
+@app.errorhandler(404)
+def _not_found(e):
+    return _error_pagina("Pagina niet gevonden",
+                         "Deze pagina bestaat niet (meer). Misschien is de link verouderd.", 404)
+
+@app.errorhandler(500)
+def _server_error(e):
+    return _error_pagina("Er ging iets mis",
+                         "Er is een onverwachte fout opgetreden. Probeer het zo nog eens.", 500)
 # endregion
 
 # region ── SENDGRID MAIL ───────────────────────────────────────
@@ -78,137 +127,194 @@ def datum_nl(datum_str: str) -> str:
     d = dt.fromisoformat(datum_str)
     return f"{dagen[d.weekday()]} {d.day} {maanden[d.month - 1]} {d.year}"
 
-def mail_html(naam: str, datum_str: str, tijd: str, gasten: int) -> str:
-    datum_display = datum_nl(datum_str)
-    voornaam = naam.split()[0]
-    return f"""<!DOCTYPE html>
-<html lang="nl">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Reservering bevestigd — Bagel Alley</title></head>
-<body style="margin:0;padding:0;background:#f5f5f0;font-family:'Georgia',serif;">
-<table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f5f5f0;">
-<tr><td align="center" style="padding:32px 16px;">
-<table width="600" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;">
-
-  <!-- HERO -->
-  <tr><td style="background:#8758ce;border-radius:16px 16px 0 0;padding:48px 48px 40px;">
-    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:36px;">
-      <tr>
-        <td>
-          <table cellpadding="0" cellspacing="0" border="0"><tr>
-            <td style="width:44px;height:44px;background:rgba(255,255,255,0.25);border-radius:50%;text-align:center;vertical-align:middle;">
-              <span style="color:#fff;font-family:Georgia,serif;font-size:11px;font-weight:bold;line-height:44px;display:block;">BA</span>
-            </td>
-            <td style="padding-left:12px;">
-              <div style="color:#fff;font-size:16px;font-weight:bold;">Bagel Alley</div>
-              <div style="color:rgba(255,255,255,0.65);font-size:12px;font-style:italic;">Wassenaar</div>
-            </td>
-          </tr></table>
-        </td>
-        <td style="text-align:right;vertical-align:top;">
-          <span style="background:rgba(255,255,255,0.15);color:#fff;font-family:Arial,sans-serif;font-size:11px;letter-spacing:1px;padding:5px 12px;border-radius:20px;text-transform:uppercase;">Reservering</span>
-        </td>
-      </tr>
-    </table>
-    <div style="color:rgba(255,255,255,0.6);font-family:Arial,sans-serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;">Bevestigd</div>
-    <div style="color:#fff;font-size:48px;font-weight:bold;line-height:1;margin-bottom:6px;">{voornaam},<br>je tafel<br>staat klaar.</div>
-    <div style="color:rgba(255,255,255,0.75);font-size:15px;font-style:italic;margin-top:16px;">We kijken ernaar uit je te verwelkomen.</div>
-  </td></tr>
-
-  <!-- DETAILS -->
-  <tr><td style="background:#fff;padding:0 48px;">
-    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-bottom:1px solid #f0eaf8;padding:36px 0;">
-      <tr>
-        <td style="width:50%;padding-right:24px;border-right:1px solid #f0eaf8;">
-          <div style="font-family:Arial,sans-serif;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:#c9a8f0;margin-bottom:6px;">Datum</div>
-          <div style="font-size:22px;font-weight:bold;color:#1e1e2e;line-height:1.2;">{datum_display}</div>
-        </td>
-        <td style="width:50%;padding-left:24px;">
-          <div style="font-family:Arial,sans-serif;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:#c9a8f0;margin-bottom:6px;">Tijdstip</div>
-          <div style="font-size:28px;font-weight:bold;color:#1e1e2e;">{tijd}</div>
-        </td>
-      </tr>
-    </table>
-    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="padding:28px 0;border-bottom:1px solid #f0eaf8;">
-      <tr>
-        <td style="width:50%;padding-right:24px;">
-          <div style="font-family:Arial,sans-serif;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:#c9a8f0;margin-bottom:6px;">Naam</div>
-          <div style="font-size:18px;font-weight:bold;color:#1e1e2e;">{naam}</div>
-        </td>
-        <td style="width:50%;padding-left:24px;">
-          <div style="font-family:Arial,sans-serif;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:#c9a8f0;margin-bottom:6px;">Gasten</div>
-          <div style="font-size:18px;font-weight:bold;color:#1e1e2e;">{gasten} {'persoon' if gasten == 1 else 'personen'}</div>
-        </td>
-      </tr>
-    </table>
-  </td></tr>
-
-  <!-- LOCATIE -->
-  <tr><td style="background:#f3eeff;padding:28px 48px;">
-    <table width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
-      <td>
-        <div style="font-family:Arial,sans-serif;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:#8758ce;margin-bottom:6px;">Locatie</div>
-        <div style="font-size:16px;font-weight:bold;color:#1e1e2e;">Langstraat 42, Wassenaar</div>
-        <div style="font-family:Arial,sans-serif;font-size:12px;color:#888;margin-top:3px;">Parkeren mogelijk in de omgeving</div>
+def _fav_row(img, titel, tekst):
+    return f"""<table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:14px;background:#ffffff;border-radius:10px;overflow:hidden;"><tr>
+      <td style="width:90px;font-size:0;line-height:0;"><img src="{img}" width="90" height="90" alt="{titel}" style="display:block;width:90px;height:90px;object-fit:cover;"></td>
+      <td style="padding:12px 16px;vertical-align:middle;">
+        <div style="font-family:Georgia,serif;font-size:15px;font-weight:bold;color:#2a2230;margin-bottom:4px;">{titel}</div>
+        <div style="font-family:Arial,sans-serif;font-size:12px;color:#8a8294;line-height:1.6;">{tekst}</div>
       </td>
-      <td style="text-align:right;">
-        <a href="https://maps.google.com/?q=Langstraat+42+Wassenaar"
-           style="display:inline-block;background:#8758ce;color:#fff;font-family:Arial,sans-serif;font-size:13px;font-weight:bold;text-decoration:none;padding:11px 22px;border-radius:8px;">
-          Route plannen
-        </a>
+    </tr></table>"""
+
+def _mail_footer():
+    return f"""<tr><td style="background:#efe9e0;padding:30px 34px;border-top:1px solid #e4dcd0;">
+    <table width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
+      <td width="33%" valign="top" style="font-family:Arial,sans-serif;">
+        <div style="font-size:10px;letter-spacing:1.5px;color:#8758ce;text-transform:uppercase;margin-bottom:8px;">Openingstijden</div>
+        <div style="font-size:12px;color:#7c7484;line-height:1.7;">Maandag, woensdag t/m zondag<br>08:00 &ndash; 16:00<br>Dinsdag gesloten</div>
+      </td>
+      <td width="34%" valign="top" style="font-family:Arial,sans-serif;">
+        <div style="font-size:10px;letter-spacing:1.5px;color:#8758ce;text-transform:uppercase;margin-bottom:8px;">Bagel Alley Wassenaar</div>
+        <div style="font-size:12px;color:#7c7484;line-height:1.7;">Langstraat 42<br>2242 KM Wassenaar<br>070 514 61 16<br>info@bagelalley.nl</div>
+      </td>
+      <td width="33%" valign="top" style="font-family:Arial,sans-serif;">
+        <div style="font-size:10px;letter-spacing:1.5px;color:#8758ce;text-transform:uppercase;margin-bottom:8px;">Volg ons</div>
+        <div style="font-size:12px;color:#7c7484;line-height:1.7;">Voor de lekkerste bagels, nieuwtjes en dagelijkse inspiratie.<br><a href="https://instagram.com/bagelalleywassenaar" style="color:#8758ce;text-decoration:none;">@bagelalleywassenaar</a></div>
       </td>
     </tr></table>
   </td></tr>
+  <tr><td style="background:#8758ce;padding:14px;text-align:center;border-radius:0 0 14px 14px;"><a href="{SITE_URL}" style="font-family:Arial,sans-serif;font-size:12px;letter-spacing:2px;color:#ffffff;text-decoration:none;text-transform:uppercase;font-weight:bold;">bagelalley.nl</a></td></tr>"""
 
-  <!-- SFEER -->
-  <tr><td style="background:#fff;padding:36px 48px;">
-    <div style="font-family:Arial,sans-serif;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:#c9a8f0;margin-bottom:10px;">Wat je kunt verwachten</div>
-    <div style="font-size:20px;font-weight:bold;color:#1e1e2e;margin-bottom:12px;">Vers gebakken bagels, elke dag.</div>
-    <div style="font-family:Arial,sans-serif;font-size:13px;color:#888;line-height:1.7;margin-bottom:16px;">
-      Van hartige classics tot zoete creaties — onze bagels worden elke ochtend vers gebakken. Neem de tijd, geniet van de sfeer.
-    </div>
-    <a href="https://www.bagelalley.nl/menu-takeaway"
-       style="font-family:Arial,sans-serif;font-size:13px;font-weight:bold;color:#8758ce;text-decoration:none;border-bottom:1px solid #c9a8f0;padding-bottom:2px;">
-      Bekijk het menu →
-    </a>
+def _mail_topbar():
+    return """<tr><td style="background:#faf7f2;padding:20px 32px;border-bottom:1px solid #ece7df;">
+    <table width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
+      <td style="font-family:Georgia,serif;font-size:20px;font-weight:bold;color:#2a2230;">Bagel <span style="color:#8758ce;">Alley</span></td>
+      <td style="text-align:right;font-family:Arial,sans-serif;font-size:10px;letter-spacing:1.5px;color:#9a8fa6;text-transform:uppercase;">&bull; Wassenaar &middot; Langstraat 42</td>
+    </tr></table>
+  </td></tr>"""
+
+# ── Bagel van de maand (centraal beheerd; pas dit maandelijks aan) ──
+BAGEL_VD_MAAND = {
+    "maand": "Juni 2026",
+    "naam": "The Spanish Classic",
+    "tagline": "Mediterraan. Hartig. Vol van smaak.",
+    "beschrijving": "Een mediterrane klassieker: onze krokante alles-bagel met verse rucola, "
+                    "luchtige omelet, pittige chorizo en zoete zongedroogde tomaten. "
+                    "Zuid-Europese smaken in &eacute;&eacute;n perfecte hap.",
+    "inspiratie": "Ge&iuml;nspireerd op Zuid-Europa: lichte, zonnige smaken en de juiste "
+                  "balans tussen hartig en fris. Een bagel die net zo goed werkt bij het "
+                  "ontbijt, de lunch of een ontspannen weekendbrunch.",
+    "ingredienten": [("\U0001F96C", "Rucola"), ("\U0001F373", "Omelet"),
+                     ("\U0001F336\uFE0F", "Chorizo"), ("\U0001F345", "Zongedroogde tomaten")],
+    "afbeelding": "/static/specials/bagelvdmaand.png",
+}
+
+def mail_html(naam: str, datum_str: str, tijd: str, gasten: int) -> str:
+    """Reserverings-bevestigingsmail (warme, redactionele stijl)."""
+    datum_display = datum_nl(datum_str)
+    delen = naam.split()
+    voornaam = delen[0] if delen else naam
+    gasten_label = "persoon" if gasten == 1 else "personen"
+    img_hero    = f"{SITE_URL}/static/fotos/pexels-amar-28056733.jpg"
+    img_classic = f"{SITE_URL}/static/fotos/pexels-barbara-g-135944487-11599632.jpg"
+    img_salmon  = f"{SITE_URL}/static/fotos/pexels-amar-28056766.jpg"
+    img_coffee  = f"{SITE_URL}/static/specials/koffie.png"
+    return f"""<!DOCTYPE html><html lang="nl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Je tafel staat klaar &mdash; Bagel Alley</title></head>
+<body style="margin:0;padding:0;background:#ece7df;font-family:Georgia,'Times New Roman',serif;">
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#ece7df;"><tr><td align="center" style="padding:26px 12px;">
+<table width="600" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;width:100%;background:#faf7f2;border-radius:14px;overflow:hidden;">
+  {_mail_topbar()}
+
+  <tr><td style="font-size:0;line-height:0;"><img src="{img_hero}" width="600" alt="Vers ontbijt bij Bagel Alley" style="display:block;width:100%;max-width:600px;height:auto;"></td></tr>
+
+  <tr><td style="background:#faf7f2;padding:36px 40px 28px;text-align:center;">
+    <div style="font-family:Arial,sans-serif;font-size:11px;letter-spacing:2px;color:#8758ce;text-transform:uppercase;margin-bottom:14px;">Reservering bevestigd</div>
+    <div style="font-family:Georgia,serif;font-size:40px;font-weight:bold;color:#2a2230;line-height:1.05;">Je tafel<br>staat klaar.</div>
+    <div style="font-family:Arial,sans-serif;font-size:14px;color:#7c7484;line-height:1.7;margin-top:16px;">Hoi {voornaam}, we kijken ernaar uit je te verwelkomen bij Bagel Alley Wassenaar.</div>
   </td></tr>
 
-  <!-- OPENINGSTIJDEN -->
-  <tr><td style="background:#1e1e2e;padding:32px 48px;">
-    <div style="font-family:Arial,sans-serif;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:#8758ce;margin-bottom:16px;">Openingstijden</div>
+  <tr><td style="background:#ffffff;padding:0 40px 30px;">
+    <div style="font-family:Arial,sans-serif;font-size:11px;letter-spacing:2px;color:#8758ce;text-transform:uppercase;text-align:center;padding:26px 0 18px;">Jouw reservering</div>
     <table width="100%" cellpadding="0" cellspacing="0" border="0">
-      <tr>
-        <td style="font-family:Arial,sans-serif;font-size:13px;color:#aaa;padding-bottom:6px;">Ma · Wo · Do · Vr · Za · Zo</td>
-        <td style="font-family:Arial,sans-serif;font-size:13px;color:#fff;font-weight:bold;text-align:right;padding-bottom:6px;">08:00 – 16:00</td>
-      </tr>
-      <tr>
-        <td style="font-family:Arial,sans-serif;font-size:13px;color:#aaa;">Dinsdag</td>
-        <td style="font-family:Arial,sans-serif;font-size:13px;color:#555;text-align:right;">Gesloten</td>
-      </tr>
+      <tr><td style="padding:11px 0;border-bottom:1px solid #f1ece4;font-family:Arial,sans-serif;font-size:12px;color:#a99fb3;">Datum</td><td style="padding:11px 0;border-bottom:1px solid #f1ece4;text-align:right;font-family:Georgia,serif;font-size:16px;font-weight:bold;color:#2a2230;">{datum_display}</td></tr>
+      <tr><td style="padding:11px 0;border-bottom:1px solid #f1ece4;font-family:Arial,sans-serif;font-size:12px;color:#a99fb3;">Tijdstip</td><td style="padding:11px 0;border-bottom:1px solid #f1ece4;text-align:right;font-family:Georgia,serif;font-size:16px;font-weight:bold;color:#2a2230;">{tijd}</td></tr>
+      <tr><td style="padding:11px 0;border-bottom:1px solid #f1ece4;font-family:Arial,sans-serif;font-size:12px;color:#a99fb3;">Gasten</td><td style="padding:11px 0;border-bottom:1px solid #f1ece4;text-align:right;font-family:Georgia,serif;font-size:16px;font-weight:bold;color:#2a2230;">{gasten} {gasten_label}</td></tr>
+      <tr><td style="padding:11px 0;font-family:Arial,sans-serif;font-size:12px;color:#a99fb3;">Locatie</td><td style="padding:11px 0;text-align:right;font-family:Georgia,serif;font-size:15px;font-weight:bold;color:#2a2230;">Langstraat 42, Wassenaar</td></tr>
     </table>
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:22px;"><tr><td align="center">
+      <a href="https://maps.google.com/?q=Langstraat+42+2242+KM+Wassenaar" style="display:inline-block;background:#8758ce;color:#ffffff;font-family:Arial,sans-serif;font-size:13px;font-weight:bold;text-decoration:none;padding:13px 30px;border-radius:8px;">Route plannen &rarr;</a>
+    </td></tr></table>
+    <div style="font-family:Arial,sans-serif;font-size:11px;color:#b3a9bd;text-align:center;margin-top:14px;">Parkeren mogelijk in de omgeving</div>
   </td></tr>
 
-  <!-- SPAM TIP -->
-  <tr><td style="background:#f3eeff;padding:12px 48px;text-align:center;">
-    <div style="font-family:Arial,sans-serif;font-size:11px;color:#8758ce;">
-      📬 Staat deze mail in je spam? Markeer hem als 'Geen spam' om toekomstige mails te ontvangen.
-    </div>
+  <tr><td style="background:#f5f0e8;padding:34px 40px 8px;">
+    <div style="font-family:Georgia,serif;font-size:22px;font-weight:bold;color:#2a2230;margin-bottom:12px;">Even weg uit de drukte.</div>
+    <div style="font-family:Arial,sans-serif;font-size:13px;color:#7c7484;line-height:1.8;">Bij Bagel Alley draait alles om verse ingredi&euml;nten, huisgemaakte smaken en een plek waar je rustig kunt genieten. Van een uitgebreid ontbijt tot een ontspannen lunch &mdash; wij zorgen dat alles voor je klaarstaat.</div>
   </td></tr>
 
-  <!-- FOOTER -->
-  <tr><td style="background:#1e1e2e;border-top:1px solid rgba(255,255,255,0.06);border-radius:0 0 16px 16px;padding:24px 48px;text-align:center;">
-    <div style="font-family:Arial,sans-serif;font-size:12px;color:#555;line-height:1.8;">
-      <a href="https://www.bagelalley.nl" style="color:#8758ce;text-decoration:none;font-weight:bold;">bagelalley.nl</a>
-      &nbsp;·&nbsp;
-      <a href="tel:0705146116" style="color:#555;text-decoration:none;">070-514 61 16</a>
-      &nbsp;·&nbsp;
-      <a href="mailto:info@bagelalley.nl" style="color:#555;text-decoration:none;">info@bagelalley.nl</a>
-    </div>
-    <div style="font-family:Arial,sans-serif;font-size:11px;color:#333;margin-top:8px;">Langstraat 42, 2242 KM Wassenaar</div>
+  <tr><td style="background:#f5f0e8;padding:24px 40px 30px;">
+    <div style="font-family:Georgia,serif;font-size:18px;font-weight:bold;font-style:italic;color:#8758ce;margin-bottom:16px;">Favorieten van onze gasten</div>
+    {_fav_row(img_classic, "New York Classic", "Onze klassieke bagel met roomkaas. Simpel, vers en precies zoals het hoort.")}
+    {_fav_row(img_salmon, "Smoked Salmon Deluxe", "Gerookte zalm, roomkaas, rode ui, kappertjes en rucola. Een favoriet voor iedere dag.")}
+    {_fav_row(img_coffee, "Specialty Coffee", "Vers gezet met zorgvuldig geselecteerde bonen. Perfect bij je bagel.")}
   </td></tr>
 
+  <tr><td style="background:#f5f0e8;padding:4px 40px 38px;text-align:center;">
+    <div style="font-family:Georgia,serif;font-size:18px;font-style:italic;color:#8758ce;margin-bottom:6px;">Tot snel bij Bagel Alley!</div>
+    <div style="font-family:Arial,sans-serif;font-size:12px;font-weight:bold;letter-spacing:1px;color:#2a2230;text-transform:uppercase;">Team Bagel Alley</div>
+  </td></tr>
+
+  {_mail_footer()}
 </table></td></tr></table>
 </body></html>"""
+
+def newsletter_html(naam: str = "") -> str:
+    """Maandelijkse nieuwsbrief rond de Bagel van de Maand."""
+    b = BAGEL_VD_MAAND
+    delen = naam.split() if naam else []
+    voornaam = delen[0] if delen else ""
+    intro = (f"Hoi {voornaam}, ontdek " if voornaam else "Ontdek ")
+    img_botm   = f"{SITE_URL}{b['afbeelding']}"
+    img_coffee = f"{SITE_URL}/static/specials/koffie.png"
+    img_cake   = f"{SITE_URL}/static/taarten/redvelvet.png"
+    img_bagel  = f"{SITE_URL}/static/fotos/pexels-anchornhaven-43716305-29445728.jpg"
+
+    ing = "".join(
+        f"""<td align="center" valign="top" style="padding:0 6px;">
+          <div style="font-size:24px;line-height:1;margin-bottom:8px;">{emoji}</div>
+          <div style="font-family:Arial,sans-serif;font-size:10px;letter-spacing:.5px;color:#7c7484;text-transform:uppercase;line-height:1.3;">{label}</div>
+        </td>"""
+        for emoji, label in b["ingredienten"]
+    )
+
+    def _more(img, titel, tekst):
+        return f"""<td width="33%" valign="top" style="padding:0 6px;">
+          <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#ffffff;border-radius:10px;overflow:hidden;">
+            <tr><td style="font-size:0;line-height:0;"><img src="{img}" width="170" alt="{titel}" style="display:block;width:100%;height:110px;object-fit:cover;"></td></tr>
+            <tr><td style="padding:12px 12px 14px;">
+              <div style="font-family:Arial,sans-serif;font-size:11px;font-weight:bold;letter-spacing:.5px;color:#2a2230;text-transform:uppercase;margin-bottom:5px;">{titel}</div>
+              <div style="font-family:Arial,sans-serif;font-size:11px;color:#8a8294;line-height:1.5;">{tekst}</div>
+            </td></tr>
+          </table>
+        </td>"""
+
+    return f"""<!DOCTYPE html><html lang="nl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Bagel van de maand &mdash; Bagel Alley</title></head>
+<body style="margin:0;padding:0;background:#ece7df;font-family:Georgia,'Times New Roman',serif;">
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#ece7df;"><tr><td align="center" style="padding:26px 12px;">
+<table width="600" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;width:100%;background:#faf7f2;border-radius:14px;overflow:hidden;">
+  {_mail_topbar()}
+
+  <tr><td style="background:#faf7f2;padding:38px 40px 6px;text-align:center;">
+    <span style="display:inline-block;border:1px solid #c9a8f0;color:#8758ce;font-family:Arial,sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;padding:5px 14px;border-radius:20px;">Nieuw</span>
+    <div style="font-family:Georgia,serif;font-size:38px;font-weight:bold;color:#2a2230;line-height:1.1;margin-top:18px;">Bagel van<br>de <span style="font-style:italic;color:#8758ce;">maand.</span></div>
+    <div style="font-family:Arial,sans-serif;font-size:12px;font-weight:bold;letter-spacing:2px;color:#2a2230;text-transform:uppercase;margin-top:14px;">{b['naam']}</div>
+    <div style="font-family:Georgia,serif;font-size:17px;font-style:italic;color:#8758ce;margin-top:10px;">{b['tagline']}</div>
+    <div style="font-family:Arial,sans-serif;font-size:13px;color:#7c7484;line-height:1.8;margin-top:14px;">{intro}onze nieuwste creatie van {b['maand'].lower()}. {b['beschrijving']}</div>
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:22px;"><tr><td align="center">
+      <a href="{SITE_URL}/menu" style="display:inline-block;background:#8758ce;color:#ffffff;font-family:Arial,sans-serif;font-size:13px;font-weight:bold;text-decoration:none;padding:13px 30px;border-radius:8px;">Proef hem deze maand &rarr;</a>
+    </td></tr></table>
+  </td></tr>
+
+  <tr><td style="font-size:0;line-height:0;padding-top:24px;"><img src="{img_botm}" width="600" alt="{b['naam']}" style="display:block;width:100%;max-width:600px;height:auto;"></td></tr>
+
+  <tr><td style="background:#f5f0e8;padding:26px 30px;">
+    <table width="100%" cellpadding="0" cellspacing="0" border="0"><tr>{ing}</tr></table>
+  </td></tr>
+
+  <tr><td style="background:#faf7f2;padding:32px 40px;">
+    <div style="font-family:Georgia,serif;font-size:22px;font-weight:bold;color:#2a2230;margin-bottom:12px;">Ge&iuml;nspireerd op Zuid-Europa.</div>
+    <div style="font-family:Arial,sans-serif;font-size:13px;color:#7c7484;line-height:1.8;">{b['inspiratie']}</div>
+  </td></tr>
+
+  <tr><td style="background:#f5f0e8;padding:30px 34px;">
+    <div style="font-family:Georgia,serif;font-size:18px;font-weight:bold;font-style:italic;color:#8758ce;margin-bottom:16px;">Meer om van te genieten</div>
+    <table width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
+      {_more(img_coffee, "Specialty Coffee", "Vers gezet, perfect bij je bagel of als moment voor jezelf.")}
+      {_more(img_cake, "Verse taarten", "Huisgemaakt en elke dag vers &mdash; ook op bestelling via onze webshop.")}
+      {_more(img_bagel, "Klassieke bagels", "Van New York Classic tot Smoked Salmon Deluxe. Onze alltime favorieten.")}
+    </tr></table>
+  </td></tr>
+
+  <tr><td style="background:#8758ce;padding:36px 40px;text-align:center;">
+    <div style="font-family:Georgia,serif;font-size:24px;font-weight:bold;color:#ffffff;margin-bottom:10px;">Zin in gezelligheid?</div>
+    <div style="font-family:Arial,sans-serif;font-size:13px;color:rgba(255,255,255,0.85);line-height:1.7;margin-bottom:22px;">Kom langs en ontdek waarom onze gasten telkens terugkomen voor iets nieuws. Reserveer eenvoudig je tafel en geniet.</div>
+    <a href="{SITE_URL}/reserveren" style="display:inline-block;background:#ffffff;color:#8758ce;font-family:Arial,sans-serif;font-size:13px;font-weight:bold;text-decoration:none;padding:13px 30px;border-radius:8px;">Reserveer een tafel &rarr;</a>
+  </td></tr>
+
+  {_mail_footer()}
+</table></td></tr></table>
+</body></html>"""
+
 
 def stuur_bevestigingsmail(naam: str, email: str, datum: str, tijd: str, gasten: int):
     """Stuurt HTML bevestigingsmail via SendGrid REST API (requests, SSL verify uitgeschakeld voor Mac)."""
@@ -234,6 +340,31 @@ def stuur_bevestigingsmail(naam: str, email: str, datum: str, tijd: str, gasten:
             print(f"[MAIL FOUT] {resp.text}")
     except Exception as e:
         print(f"[MAIL FOUT] {e}")
+
+def stuur_newsletter(email: str, naam: str = ""):
+    """Stuurt de maandelijkse nieuwsbrief (Bagel van de Maand) via SendGrid."""
+    try:
+        import requests as req_lib
+        payload = {
+            "personalizations": [{"to": [{"email": email}]}],
+            "from": {"email": MAIL_VAN, "name": MAIL_VAN_NAAM},
+            "reply_to": {"email": "info@bagelalley.nl"},
+            "subject": f"Bagel van de maand: {BAGEL_VD_MAAND['naam']} \U0001F96F Bagel Alley",
+            "content": [{"type": "text/html", "value": newsletter_html(naam)}],
+        }
+        resp = req_lib.post(
+            "https://api.sendgrid.com/v3/mail/send",
+            json=payload,
+            headers={"Authorization": f"Bearer {SENDGRID_API_KEY}", "Content-Type": "application/json"},
+            verify=False,
+            timeout=10,
+        )
+        print(f"[NEWSLETTER] Verstuurd naar {email} | status {resp.status_code}")
+        if resp.status_code not in (200, 202):
+            print(f"[NEWSLETTER FOUT] {resp.text}")
+    except Exception as e:
+        print(f"[NEWSLETTER FOUT] {e}")
+
 # endregion = os.environ.get("SECRET_KEY", "bagelalley-secret-change-me")
 
 # region ── DATABASE SETUP ─────────────────────────────────────
@@ -377,9 +508,14 @@ def build_restaurant_schema() -> str:
 
 @app.context_processor
 def inject_seo_globals():
+    try:
+        schema = build_restaurant_schema()
+    except Exception as e:
+        print(f"[SEO] schema-fout: {e}")
+        schema = "{}"
     return {
         "site_url": SITE_URL,
-        "restaurant_schema_json": build_restaurant_schema(),
+        "restaurant_schema_json": schema,
     }
 
 @app.route("/robots.txt")
@@ -659,6 +795,9 @@ def reserveren_post():
 
     print(f"[RESERVERING] {naam} | {email} | {datum} om {tijd} | {gasten} gasten")
     stuur_bevestigingsmail(naam, email, datum, tijd, gasten)
+    # Nieuwsbrief alleen bij expliciete opt-in (AVG-conform)
+    if bool(data.get("nieuwsbrief")):
+        stuur_newsletter(email, naam)
     stuur_notificatie({"naam": naam, "datum": datum, "tijd": tijd, "gasten": gasten})
     stats = bereken_stats(datum)
     return jsonify({"succes": True, "tijd": tijd, "stats": stats})

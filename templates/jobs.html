@@ -7,7 +7,7 @@
   {% set seo_desc = "Kom werken bij Bagel Alley in Wassenaar. Bekijk onze vacatures en solliciteer direct." %}
   {% set seo_path = "/jobs" %}
   {% set seo_crumb = "Vacatures" %}
-  {% include "_seo.html" %}
+  {% include "_seo.html" ignore missing %}
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
@@ -91,10 +91,10 @@
       .vacature-card-header { flex-direction: column; align-items: flex-start; }
     }
   </style>
-  {% include "_favicons.html" %}
+  {% include "_favicons.html" ignore missing %}
 </head>
 <body>
-{% include "_loader.html" %}
+{% include "_loader.html" ignore missing %}
 
 <nav>
   <a href="/" class="nav-logo">
@@ -181,7 +181,7 @@
   </div>
 
 </div>
-{% include "_ident.html" %}
-{% include "_cookie.html" %}
+{% include "_ident.html" ignore missing %}
+{% include "_cookie.html" ignore missing %}
 </body>
 </html>
